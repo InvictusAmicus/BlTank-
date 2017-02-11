@@ -11,6 +11,10 @@ public:
 	int speed;
 	int attack;
 	int defence;
+	int gameHealth;
+	int gameSpeed;
+	int gameAttack;
+	int gameDefence;
 
 	Car(std::string n);
 	~Car();

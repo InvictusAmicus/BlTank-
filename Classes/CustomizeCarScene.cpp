@@ -1,5 +1,6 @@
 #include "CustomizeCarScene.h"
 #include "GameManager.h"
+#include <iostream>
 #include "Game.h"
 
 #define health1 1000
@@ -33,7 +34,7 @@
 #define goBack 10000
 #define goForward 20000
 
-#define CARSPRITE 100000
+#define CARSPRITE 30000
 
 cocos2d::Scene* CustomizeCarScene::createScene()
 {
@@ -62,6 +63,8 @@ bool CustomizeCarScene::init()
 	
 	cars.push_back(new Car("Blocky.png"));
 	cars.push_back(new Car("WhiteCar.png"));
+	cars.push_back(new Car("YellowCar.png"));
+
 
 	statline[0] = cars.at(current)->health;
 	statline[1] = cars.at(current)->speed;
@@ -73,7 +76,7 @@ bool CustomizeCarScene::init()
 	auto visibleSize = director->getVisibleSize();
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
 
-	auto backArrow1 = cocos2d::Sprite::create("backArrow.png");
+/*	auto backArrow1 = cocos2d::Sprite::create("backArrow.png");
 	backArrow1->setScale(gm->scaler);
 	backArrow1->setPosition
 	(
@@ -84,8 +87,8 @@ bool CustomizeCarScene::init()
 		)
 	);
 	this->addChild(backArrow1, 1);
-
-	auto backArrow2 = cocos2d::Sprite::create("backArrow.png");
+*/
+	auto backArrow2 = cocos2d::MenuItemImage::create("backArrow.png", "backArrow.png", CC_CALLBACK_1(CustomizeCarScene::goBackMenu, this));
 	backArrow2->setScale(gm->scaler);
 	backArrow2->setPosition
 	(
@@ -95,8 +98,10 @@ bool CustomizeCarScene::init()
 			origin.y + backArrow2->getContentSize().height / 2 + (6*visibleSize.height / 8)
 		)
 	);
-	this->addChild(backArrow2, 1, goBack);
-
+	auto backMenu = cocos2d::Menu::create(backArrow2, NULL);
+	backMenu->setPosition(cocos2d::Vec2::ZERO);
+	this->addChild(backMenu, 1);
+/*
 	auto backArrow3 = cocos2d::Sprite::create("backArrow.png");
 	backArrow3->setScale(gm->scaler);
 	backArrow3->setPosition
@@ -120,19 +125,21 @@ bool CustomizeCarScene::init()
 		)
 	);
 	this->addChild(forwardArrow1, 1);
-
-	auto forwardArrow2 = cocos2d::Sprite::create("forwardArrow.png");
+*/
+	auto forwardArrow2 = cocos2d::MenuItemImage::create("forwardArrow.png", "forwardArrow.png", CC_CALLBACK_1(CustomizeCarScene::goForwardMenu, this));
 	forwardArrow2->setScale(gm->scaler);
 	forwardArrow2->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + forwardArrow2->getContentSize().width / 2 + (9*visibleSize.width / 12),
-			origin.y + forwardArrow2->getContentSize().height / 2 + (6*visibleSize.height / 8)
+			origin.x + forwardArrow2->getContentSize().width / 2 + (9 * visibleSize.width / 12),
+			origin.y + forwardArrow2->getContentSize().height / 2 + (6 * visibleSize.height / 8)
 		)
 	);
-	this->addChild(forwardArrow2, 1, goForward);
-
+	auto forwardMenu = cocos2d::Menu::create(forwardArrow2, NULL);
+	forwardMenu->setPosition(cocos2d::Vec2::ZERO);
+	this->addChild(forwardMenu, 1);
+/*
 	auto forwardArrow3 = cocos2d::Sprite::create("forwardArrow.png");
 	forwardArrow3->setScale(gm->scaler);
 
@@ -145,7 +152,7 @@ bool CustomizeCarScene::init()
 		)
 	);
 	this->addChild(forwardArrow3, 1);
-	
+	*/
 	auto carSprite = cocos2d::Sprite::create("Blocky.png");
 	carSprite->setScale(gm->scaler);
 	
@@ -197,7 +204,6 @@ bool CustomizeCarScene::init()
 
 	auto defenceLabel = cocos2d::Label::createWithTTF("Defence:", "fonts/arial.ttf", 16);
 	defenceLabel->setScale(gm->scaler);
-	CCLOG("hahaha");
 	defenceLabel->setPosition
 	(
 		cocos2d::Vec2
@@ -209,58 +215,6 @@ bool CustomizeCarScene::init()
 	this->addChild(defenceLabel, 1);
 
 	addStats();
-
-	auto listener1 = cocos2d::EventListenerTouchOneByOne::create();
-	listener1->setSwallowTouches(true);
-
-	listener1->onTouchBegan = [=](cocos2d::Touch* touch, cocos2d::Event* event)
-	{
-		static int x = 0;
-
-		auto target = static_cast<cocos2d::Sprite*>(event->getCurrentTarget());
-
-		cocos2d::Vec2 locationInNode = target->convertToNodeSpace(touch->getLocation());
-		cocos2d::Size s = target->getContentSize();
-		cocos2d::Rect rect = cocos2d::Rect(0, 0, s.width, s.height);
-		float originalXPos = target->getPosition().x;
-		float originalYPos = target->getPosition().y;
-
-		if (target->getTag() == 10000)
-		{
-			if (current == 0)
-			{
-				current = cars.size() - 1;
-			}
-			else
-			{
-				current--;
-			}
-
-			changeCar();
-		}
-		else if (target->getTag() == 20000)
-		{
-			if (current == cars.size() - 1)
-			{
-				current = 0;
-			}
-			else
-			{
-				current++;
-			}
-				changeCar();
-		}
-
-		if (rect.containsPoint(locationInNode))
-		{
-			return true;
-		}
-		return false;
-
-	};
-
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, backArrow2);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), forwardArrow2);
 
 	auto playGameButton = cocos2d::MenuItemImage::create
 	(
@@ -281,8 +235,33 @@ bool CustomizeCarScene::init()
 	menu->setPosition(cocos2d::Vec2::ZERO);
 	this->addChild(menu, 1);
 
-
 	return true;
+}
+
+void CustomizeCarScene::goBackMenu(cocos2d::Ref* pSender)
+{
+	if (current == 0)
+	{
+		current = cars.size() - 1;
+	}
+	else
+	{
+		current--;
+	}
+	changeCar();
+}
+
+void CustomizeCarScene::goForwardMenu(cocos2d::Ref* pSender)
+{
+	if (current == cars.size() - 1)
+	{
+		current = 0;
+	}
+	else
+	{
+		current++;
+	}
+	changeCar();
 }
 
 void CustomizeCarScene::changeCar()
@@ -395,6 +374,8 @@ void CustomizeCarScene::addStats()
 
 void CustomizeCarScene::goToGame(cocos2d::Ref* pSender)
 {
+	GameManager* gm = GameManager::getInstance();
+	gm->car = new Car(cars.at(current)->filename);
 	auto StoryScene = Game::createScene();
 	cocos2d::Director::getInstance()->pushScene(StoryScene);
 }

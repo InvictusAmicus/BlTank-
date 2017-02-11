@@ -90,5 +90,5 @@ bool BeginningDialogueScene::init()
 void BeginningDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
 	auto CustomizeScene = CustomizeCarScene::createScene();
-	cocos2d::Director::getInstance()->pushScene(CustomizeScene);
+	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionFade::create(2,CustomizeScene));
 }

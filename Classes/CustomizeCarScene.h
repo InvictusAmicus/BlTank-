@@ -15,6 +15,8 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	void goToGame(cocos2d::Ref* pSender);
+	void goBackMenu(cocos2d::Ref* pSender);
+	void goForwardMenu(cocos2d::Ref* pSender);
 
 
 	void changeCar();

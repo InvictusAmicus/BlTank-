@@ -60,7 +60,7 @@ bool MainMenuScene::init()
 	auto menu = cocos2d::Menu::create(playGameButton, NULL);
 	menu->setPosition(cocos2d::Vec2::ZERO);
 	this->addChild(menu, 1);
-
+/*
 	auto optionsButton = cocos2d::MenuItemImage::create
 	(
 		"Options.png",
@@ -71,7 +71,7 @@ bool MainMenuScene::init()
 	/*
 	Set the position of the button using a 2d Vector variable
 	*/
-
+/*
 	optionsButton->setScale(gm->scaler);
 
 	optionsButton->setPosition
@@ -86,7 +86,7 @@ bool MainMenuScene::init()
 	auto optionsMenu = cocos2d::Menu::create(optionsButton, NULL);
 	optionsMenu->setPosition(cocos2d::Vec2::ZERO);
 	this->addChild(optionsMenu, 1);
-
+	*/
 	auto exitButton = cocos2d::MenuItemImage::create
 	(
 		"Exit.png",
@@ -131,7 +131,7 @@ bool MainMenuScene::init()
 void MainMenuScene::goToStory(cocos2d::Ref* pSender)
 {
 	auto StoryScene = BeginningDialogueScene::createScene();
-	cocos2d::Director::getInstance()->pushScene(StoryScene);
+	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionFlipX::create(2, StoryScene));
 }
 
 void MainMenuScene::goToOptions(cocos2d::Ref* pSender)
