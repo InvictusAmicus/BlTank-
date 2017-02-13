@@ -30,9 +30,12 @@ bool Game::init()
 	}
 
 	time = 100;
+	level = 0;
 	scheduleUpdate();
-	GameManager* gm = GameManager::getInstance();
+	gm = GameManager::getInstance();
+	gm->addBosses();
 	Car* car = gm->car;
+	Boss* boy = gm->levels.at(0);
 
 	auto attackButton = cocos2d::Sprite::create("Attack.png");
 	attackButton->setScale(gm->scaler);
@@ -57,6 +60,7 @@ bool Game::init()
 		)
 	);
 	this->addChild(magicButton, 1, magicButtonTag);
+
 
 	auto specialButton = cocos2d::Sprite::create("Special.png");
 	specialButton->setScale(gm->scaler);
@@ -104,31 +108,19 @@ bool Game::init()
 	);
 	this->addChild(playerHealth, 1);
 
-	auto enemy = cocos2d::Sprite::create("Level1.png");
-	enemy->setScale(gm->scaler*2);
-	enemy->setPosition
+	bossSprite = cocos2d::Sprite::create(gm->levels.at(0)->filename);
+	bossSprite->setScale(gm->scaler * 2.75);
+	bossSprite->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (3 * visibleSize.width / 12) - enemy->getContentSize().width / 2,
-			origin.y + (4.5 * visibleSize.height / 8) - enemy->getContentSize().height / 2
+			origin.x + (2.5 * visibleSize.width / 12) - bossSprite->getContentSize().width / 2,
+			origin.y + (4.5 * visibleSize.height / 8) - bossSprite->getContentSize().height / 2
 		)
 	);
-	this->addChild(enemy, 1);
-/*
-	auto enemy = cocos2d::Sprite::create("Level2.png");
-	enemy->setScale(gm->scaler * 2.75);
-	enemy->setPosition
-	(
-		cocos2d::Vec2
-		(
-			origin.x + (2.5 * visibleSize.width / 12) - enemy->getContentSize().width / 2,
-			origin.y + (4.5 * visibleSize.height / 8) - enemy->getContentSize().height / 2
-		)
-	);
-	this->addChild(enemy, 1);
+	this->addChild(bossSprite, 1);
 	player->setScale(1 / gm->scaler*2);
-	*/
+	
 	std::string timeLeft;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
@@ -145,7 +137,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (6 * visibleSize.width / 12) - enemy->getContentSize().width / 2,
+			origin.x + (6 * visibleSize.width / 12) - timerLabel->getContentSize().width / 2,
 			origin.y + (7.5 * visibleSize.height / 8)
 		)
 	);
@@ -173,21 +165,18 @@ bool Game::init()
 				buttonPushed = true;
 				buttonClicked = 0;
 				moveButton = true;
-				CCLOG("ATTACK");
 			}
 			else if (target->getTag() == 1011)
 			{
 				buttonPushed = true;
 				buttonClicked = 1;
 				moveButton = true;
-				CCLOG("Magic");
 			}
 			else if (target->getTag() == 1012)
 			{
 				buttonPushed = true;
 				buttonClicked = 2;
 				moveButton = true;
-				CCLOG("Special");
 			}
 			return true;
 		}
@@ -198,10 +187,52 @@ bool Game::init()
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), magicButton);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), specialButton);
 
-
 	return true;
+}
 
+void Game::changeHealth(int d)
+{
+	gm->car->currentHealth -= d;
 
+	if (gm->car->currentHealth >= gm->car->gameHealth)
+	{
+		gm->car->currentHealth = gm->car->gameHealth;
+	}
+	std::string healthLeft;
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+	healthLeft = std::to_string(gm->car->currentHealth);
+
+#else CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	std::ostringstream timeLeft1;
+	timeLeft1 << time;
+	timeLeft = timeLeft1.str();
+#endif
+
+	healthLabel->setString("Health: " + healthLeft);
+	if (gm->car->currentHealth <= 0)
+	{
+		//fade out to bad end
+		director->end();
+	}
+}
+
+void Game::changeTimer(int d)
+{
+
+	time -= d;
+	std::string timeLeft;
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+	timeLeft = std::to_string(time);
+
+#else CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	std::ostringstream timeLeft1;
+	timeLeft1 << time;
+	timeLeft = timeLeft1.str();
+#endif
+
+	timerLabel->setString(timeLeft);
 }
 
 void Game::update(float delta)
@@ -214,9 +245,9 @@ void Game::update(float delta)
 	{
 		if (buttonPushed)
 		{
-			attack->setPositionX(attack->getPositionX() + 40 * delta);
-			magic->setPositionX(magic->getPositionX() + 40 * delta);
-			special->setPositionX(special->getPositionX() + 40 * delta);
+			attack->setPositionX(attack->getPositionX() + 60 * delta);
+			magic->setPositionX(magic->getPositionX() + 60 * delta);
+			special->setPositionX(special->getPositionX() + 60 * delta);
 			if (attack->getPositionX() > director->getVisibleSize().width + attack->getContentSize().width)
 			{
 				buttonPushed = false;
@@ -227,18 +258,24 @@ void Game::update(float delta)
 						attack->setTexture("Attack.png");
 						magic->setTexture("Attack.png");
 						special->setTexture("Back.png");
+						attMagSpe = 0;
+						buttonLayer++;
 					}
 					else if (buttonClicked == 1)
 					{
-						attack->setTexture("Magic.png");
-						magic->setTexture("Magic.png");
+						attack->setTexture("Thunder.png");
+						magic->setTexture("Heal.png");
 						special->setTexture("Back.png");
+						attMagSpe = 1;
+						buttonLayer++;
 					}
 					else if (buttonClicked == 2)
 					{
 						attack->setTexture("Special.png");
 						magic->setTexture("Special.png");
 						special->setTexture("Back.png");
+						attMagSpe = 2;
+						buttonLayer++;
 					}
 				}
 				else
@@ -246,73 +283,109 @@ void Game::update(float delta)
 					if (buttonClicked == 0)
 					{
 						attack->setTexture("Attack.png");
-						magic->setTexture("Attack.png");
-						special->setTexture("Back.png");
+						magic->setTexture("Magic.png");
+						special->setTexture("Special.png");
+						if (attMagSpe = 0) // first attack
+						{
+							damageBoss(calculateDamage());
+						}
+						else if (attMagSpe == 1)//elemental attack
+						{
+							damageBoss(calculateDamage());
+						}
+						else // special 1
+						{
+							damageBoss(calculateDamage());
+						}
+						changeTimer(10);
+						buttonLayer--;
 					}
 					else if (buttonClicked == 1)
 					{
-						attack->setTexture("Magic.png");
+						attack->setTexture("Attack.png");
 						magic->setTexture("Magic.png");
-						special->setTexture("Back.png");
+						special->setTexture("Special.png");
+						if (attMagSpe = 0) // second attack
+						{
+							damageBoss(calculateDamage());
+						}
+						else if (attMagSpe == 1)//heal
+						{
+							damageBoss(calculateDamage());							
+						}
+						else // special 2
+						{
+							damageBoss(calculateDamage());
+						}
+						changeTimer(20);
+						buttonLayer--;
 					}
 					else if (buttonClicked == 2)
 					{
 						attack->setTexture("Attack.png");
 						magic->setTexture("Magic.png");
 						special->setTexture("Special.png");
+						buttonLayer--;
+
 					}
 				}
 			}
 		}
 		if (!buttonPushed && moveButton)
 		{
-
-			
-			attack->setPositionX(attack->getPositionX() - 40 * delta);
-			magic->setPositionX(magic->getPositionX() - 40 * delta);
-			special->setPositionX(special->getPositionX() - 40 * delta);
+			attack->setPositionX(attack->getPositionX() - 60 * delta);
+			magic->setPositionX(magic->getPositionX() - 60 * delta);
+			special->setPositionX(special->getPositionX() - 60 * delta);
 			if (attack->getPositionX() < origin.x + attack->getContentSize().width + (11 * visibleSize.width / 12) - attack->getContentSize().width)
 			{
 				moveButton = false;
 			}
+		}	
+	}
+	if (transform)
+	{
+		bossSprite->setOpacity(bossSprite->getOpacity() - 128 * delta);
+		if (bossSprite->getOpacity() < 2)
+		{
+			transform = false;
+		}
+		if (!transform)
+		{
+			bossSprite->setTexture(gm->levels.at(level)->filename);
+			transformBack = true;
 		}
 	}
-/*
-		if (attack->getPositionX() == director->getVisibleSize().width)
+	if (transformBack)
+	{
+		bossSprite->setOpacity(bossSprite->getOpacity() + 128 * delta);
+		if (bossSprite->getOpacity() > 253)
 		{
-			moveButton = false;
+			transformBack = false;
+			bossSprite->setOpacity(255);
 		}
-		if (buttonLayer == 0)
-		{
-			if (buttonClicked == 0)
-			{
-				attack->setTexture("Attack.png");
-				magic->setTexture("Magic.png");
-				special->setTexture("Back.png");
-			}
-			else if (buttonClicked == 1)
-			{
-				attack->setTexture("Attack.png");
-				magic->setTexture("Magic.png");
-				special->setTexture("Back.png");
-			}
-			else if (buttonClicked == 2)
-			{
-				attack->setTexture("Attack.png");
-				magic->setTexture("Magic.png");
-				special->setTexture("Back.png");
-			}
-		}
-		else
-		{
+	}
+}
 
-		}
-		if (!moveButton && attack->getPositionX() >= origin.x + attack->getContentSize().width + (11 * visibleSize.width / 12) - attack->getContentSize().width)
+void Game::damageBoss(int damage)
+{
+	gm->levels.at(level)->health -= damage;
+	if (gm->levels.at(level)->health <= 0)
+	{
+		bool ready = false;
+		if (level == 0)
 		{
-			attack->setPositionX(attack->getPositionX() - 4 * delta);
-			magic->setPositionX(magic->getPositionX() - 4 * delta);
-			special->setPositionX(special->getPositionX() - 4 * delta);
+			transform = true;
+			level++;
+			
 		}
-		*/
-//	}
+		else if (level == 1)
+		{
+			director->end();
+		}
+	}
+}
+
+int Game::calculateDamage()
+{
+	return 1000;
 }

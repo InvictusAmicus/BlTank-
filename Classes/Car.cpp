@@ -13,6 +13,7 @@ Car::Car(std::string n)
 		gameSpeed = speed * 10;
 		gameAttack = attack * 10;
 		gameDefence = defence * 10;
+
 	}
 	else if (filename == "WhiteCar.png")
 	{
@@ -35,6 +36,11 @@ Car::Car(std::string n)
 		gameSpeed = speed * 10;
 		gameAttack = attack * 10;
 		gameDefence = defence * 10;
+		currentHealth = gameHealth;
+		currentSpeed = gameSpeed;
+		currentAttack = gameAttack;
+		currentDefence = gameDefence;
+
 	}
 
 }

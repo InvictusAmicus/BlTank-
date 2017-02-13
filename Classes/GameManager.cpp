@@ -5,6 +5,7 @@ static GameManager* gm;
 GameManager::GameManager()
 {
 	scaler = cocos2d::Director::getInstance()->getVisibleSize().width / 480;
+
 }
 
 GameManager::~GameManager()
@@ -28,4 +29,14 @@ GameManager* GameManager::getInstance()
 	}
 
 	return gm;
+}
+
+void GameManager::addBosses()
+{
+	levels.clear();
+
+	levels.push_back(new Boss("Level1.png"));
+	levels.push_back(new Boss("Level2.png"));
+
+
 }
