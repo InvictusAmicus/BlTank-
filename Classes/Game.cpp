@@ -1,5 +1,8 @@
 #include "Game.h"
+#include "WinGameDialogueScene.h"
+#include "LoseGameDialogueScene.h"
 #include <sstream>
+#include <ctime>
 
 #define attackButtonTag 1010
 #define magicButtonTag 1011
@@ -28,7 +31,7 @@ bool Game::init()
 	{
 		return false;
 	}
-
+	srand(std::time(NULL));
 	time = 100;
 	level = 0;
 	scheduleUpdate();
@@ -96,17 +99,17 @@ bool Game::init()
 	gh1 << gm->car->gameHealth;
 	gh = gh1.str();
 #endif
-	auto playerHealth = cocos2d::Label::createWithTTF("Health: " + gh, "fonts/arial.ttf", 16);
-	playerHealth->setScale(gm->scaler);
-	playerHealth->setPosition
+	healthLabel = cocos2d::Label::createWithTTF("Health: " + gh, "fonts/arial.ttf", 16);
+	healthLabel->setScale(gm->scaler);
+	healthLabel->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (8 * visibleSize.width / 12) - playerHealth->getContentSize().width / 2,
-			origin.y + ( visibleSize.height / 8) - playerHealth->getContentSize().height / 2
+			origin.x + (8 * visibleSize.width / 12) - healthLabel->getContentSize().width / 2,
+			origin.y + ( visibleSize.height / 8) - healthLabel->getContentSize().height / 2
 		)
 	);
-	this->addChild(playerHealth, 1);
+	this->addChild(healthLabel, 1);
 
 	bossSprite = cocos2d::Sprite::create(gm->levels.at(0)->filename);
 	bossSprite->setScale(gm->scaler * 2.75);
@@ -192,6 +195,10 @@ bool Game::init()
 
 void Game::changeHealth(int d)
 {
+	if (d < 0)
+	{
+		changeTimer(200 / gm->car->currentSpeed);
+	}
 	gm->car->currentHealth -= d;
 
 	if (gm->car->currentHealth >= gm->car->gameHealth)
@@ -212,8 +219,9 @@ void Game::changeHealth(int d)
 	healthLabel->setString("Health: " + healthLeft);
 	if (gm->car->currentHealth <= 0)
 	{
-		//fade out to bad end
-		director->end();
+		//fade out to bad end // lost all health
+		auto StoryScene = LoseGameDialogueScene::createScene();
+		cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 	}
 }
 
@@ -233,6 +241,12 @@ void Game::changeTimer(int d)
 #endif
 
 	timerLabel->setString(timeLeft);
+
+	if (time < 0)
+	{
+		auto StoryScene = LoseGameDialogueScene::createScene();
+		cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+	}
 }
 
 void Game::update(float delta)
@@ -255,8 +269,8 @@ void Game::update(float delta)
 				{
 					if (buttonClicked == 0)
 					{
-						attack->setTexture("Attack.png");
-						magic->setTexture("Attack.png");
+						attack->setTexture("SwordPunch.png");
+						magic->setTexture("HitchhikeStrike.png");
 						special->setTexture("Back.png");
 						attMagSpe = 0;
 						buttonLayer++;
@@ -271,8 +285,8 @@ void Game::update(float delta)
 					}
 					else if (buttonClicked == 2)
 					{
-						attack->setTexture("Special.png");
-						magic->setTexture("Special.png");
+						attack->setTexture("EnlightenedQuestioning.png");
+						magic->setTexture("HeavenGaze.png");
 						special->setTexture("Back.png");
 						attMagSpe = 2;
 						buttonLayer++;
@@ -285,19 +299,19 @@ void Game::update(float delta)
 						attack->setTexture("Attack.png");
 						magic->setTexture("Magic.png");
 						special->setTexture("Special.png");
-						if (attMagSpe = 0) // first attack
+						if (attMagSpe == 0) // first attack
 						{
-							damageBoss(calculateDamage());
+
+							damageBoss(calculateDamage(1));
 						}
 						else if (attMagSpe == 1)//elemental attack
 						{
-							damageBoss(calculateDamage());
+							damageBoss(calculateDamage(2));
 						}
 						else // special 1
 						{
-							damageBoss(calculateDamage());
+							damageBoss(calculateDamage(3));
 						}
-						changeTimer(10);
 						buttonLayer--;
 					}
 					else if (buttonClicked == 1)
@@ -305,19 +319,18 @@ void Game::update(float delta)
 						attack->setTexture("Attack.png");
 						magic->setTexture("Magic.png");
 						special->setTexture("Special.png");
-						if (attMagSpe = 0) // second attack
+						if (attMagSpe == 0) // second attack
 						{
-							damageBoss(calculateDamage());
+							damageBoss(calculateDamage(4));
 						}
 						else if (attMagSpe == 1)//heal
 						{
-							damageBoss(calculateDamage());							
+							changeHealth(-gm->car->gameHealth);
 						}
 						else // special 2
 						{
-							damageBoss(calculateDamage());
+							damageBoss(calculateDamage(6));
 						}
-						changeTimer(20);
 						buttonLayer--;
 					}
 					else if (buttonClicked == 2)
@@ -380,12 +393,61 @@ void Game::damageBoss(int damage)
 		}
 		else if (level == 1)
 		{
-			director->end();
+
+			auto StoryScene = WinGameDialogueScene::createScene();
+			cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 		}
+	}
+	else
+	{
+		int returnDamage = rand() % 100 + (gm->levels.at(level)->attack) - (gm->car->currentDefence);
+		if (returnDamage < 10)
+		{
+			returnDamage += 70;
+		}
+		changeHealth(returnDamage);
 	}
 }
 
-int Game::calculateDamage()
+int Game::calculateDamage(int attack)
 {
-	return 1000;
+	Boss* b = gm->levels.at(level);
+	Car* c = gm->car;
+	int damage = 0;
+	if (attack == 1)
+	{
+		damage = 300 - (5*b->defence) + c->currentAttack;
+		changeTimer(10 - c->currentSpeed/10);
+	}
+	else if (attack == 2)
+	{
+		damage = (500 + c->currentAttack) - (3*b->defence);
+		changeTimer(20 - 2*(c->currentSpeed/10));
+	}
+	else if (attack == 3)
+	{
+		damage = (1000 + c->currentAttack * 3) - (b->defence * 10);
+		changeTimer(250 / c->currentSpeed);
+	}
+	else if (attack == 4)
+	{
+		damage = 300 - (5 * b->defence) + c->currentAttack;
+		changeTimer(10 - (7 - c->currentSpeed/10));
+	}
+	else if (attack == 6)
+	{
+		damage = (300 + c->currentAttack) - (3*b->defence);
+		
+		c->currentAttack += 10;
+		if (c->currentSpeed < 100)
+		{
+			c->currentSpeed += 10;
+		}changeTimer(35 - 3 * (c->currentSpeed / 10));
+	}
+	if (damage < 0)
+	{
+		damage *= -1;
+	}
+	CCLOG("%d     %d", damage, attack);
+	return damage;
 }

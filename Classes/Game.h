@@ -21,7 +21,7 @@ private:
 
 	GameManager* gm;
 	void damageBoss(int damage);
-	int calculateDamage();
+	int calculateDamage(int atttack);
 
 
 public:

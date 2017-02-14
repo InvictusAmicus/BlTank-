@@ -8,13 +8,13 @@ Boss::Boss(std::string n)
 		health = 1000;
 		speed = 20;
 		attack = 30;
-		defence = 20;
+		defence = 25;
 	}
 	else
 	{
 		health = 2500;
 		speed = 30;
 		attack = 60;
-		defence = 30;
+		defence = 35;
 	}
 }
