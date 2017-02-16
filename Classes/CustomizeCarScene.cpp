@@ -94,7 +94,7 @@ bool CustomizeCarScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + backArrow2->getContentSize().width / 2 + (3*visibleSize.width / 12),
+			origin.x + backArrow2->getContentSize().width / 2 + (2*visibleSize.width / 12),
 			origin.y + backArrow2->getContentSize().height / 2 + (6*visibleSize.height / 8)
 		)
 	);
@@ -132,7 +132,7 @@ bool CustomizeCarScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + forwardArrow2->getContentSize().width / 2 + (9 * visibleSize.width / 12),
+			origin.x + forwardArrow2->getContentSize().width / 2 + (10 * visibleSize.width / 12),
 			origin.y + forwardArrow2->getContentSize().height / 2 + (6 * visibleSize.height / 8)
 		)
 	);
@@ -160,7 +160,7 @@ bool CustomizeCarScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (6 * visibleSize.width / 12) - carSprite->getContentSize().width / 2,
+			origin.x + (6 * visibleSize.width / 12),
 			origin.y + carSprite->getContentSize().height / 2 + (6 * visibleSize.height / 8)
 		)
 	);
@@ -227,8 +227,11 @@ bool CustomizeCarScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (11 * visibleSize.width / 12) - playGameButton->getContentSize().width / 2,
+			origin.x + (11 * visibleSize.width / 12),
 			origin.y + playGameButton->getContentSize().height / 2 + (visibleSize.height / 8)
+
+	//		origin.x + attackButton->getContentSize().width + (11 * visibleSize.width / 12) - attackButton->getContentSize().width,
+	//		origin.y + attackButton->getContentSize().height / 4 + (6 * visibleSize.height / 8)
 		)
 	);
 	auto menu = cocos2d::Menu::create(playGameButton, NULL);

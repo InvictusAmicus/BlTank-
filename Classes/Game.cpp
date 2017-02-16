@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "WinGameDialogueScene.h"
 #include "LoseGameDialogueScene.h"
+#include "SimpleAudioEngine.h"
 #include <sstream>
 #include <ctime>
 
@@ -32,6 +33,11 @@ bool Game::init()
 		return false;
 	}
 	srand(std::time(NULL));
+
+	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->stopBackgroundMusic(true);
+	audio->playBackgroundMusic("Audio/Mabye-Boss-Battle.mp3", true);
+
 	time = 100;
 	level = 0;
 	scheduleUpdate();
@@ -46,7 +52,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + attackButton->getContentSize().width + (11 * visibleSize.width / 12) - attackButton->getContentSize().width,
+			origin.x + attackButton->getContentSize().width + visibleSize.width - (attackButton->getContentSize().width*gm->scaler),
 			origin.y + attackButton->getContentSize().height / 4 + (6 * visibleSize.height / 8)
 		)
 	);
@@ -58,12 +64,12 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + magicButton->getContentSize().width + (11 * visibleSize.width / 12) - magicButton->getContentSize().width,
+			origin.x + magicButton->getContentSize().width + visibleSize.width - (magicButton->getContentSize().width*gm->scaler),
 			origin.y + magicButton->getContentSize().height / 4 + (4 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(magicButton, 1, magicButtonTag);
-
+	CCLOG("%f, %f", visibleSize.width, gm->scaler);
 
 	auto specialButton = cocos2d::Sprite::create("Special.png");
 	specialButton->setScale(gm->scaler);
@@ -71,7 +77,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + specialButton->getContentSize().width + (11 * visibleSize.width / 12) - specialButton->getContentSize().width,
+			origin.x + specialButton->getContentSize().width + visibleSize.width - (specialButton->getContentSize().width*gm->scaler),
 			origin.y + specialButton->getContentSize().height / 4 + (2 * visibleSize.height / 8)
 		)
 	);
@@ -112,7 +118,7 @@ bool Game::init()
 	this->addChild(healthLabel, 1);
 
 	bossSprite = cocos2d::Sprite::create(gm->levels.at(0)->filename);
-	bossSprite->setScale(gm->scaler * 2.75);
+	bossSprite->setScale(gm->scaler * 2);
 	bossSprite->setPosition
 	(
 		cocos2d::Vec2
@@ -122,7 +128,7 @@ bool Game::init()
 		)
 	);
 	this->addChild(bossSprite, 1);
-	player->setScale(1 / gm->scaler*2);
+	player->setScale(gm->scaler);
 	
 	std::string timeLeft;
 
@@ -211,9 +217,9 @@ void Game::changeHealth(int d)
 	healthLeft = std::to_string(gm->car->currentHealth);
 
 #else CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	std::ostringstream timeLeft1;
-	timeLeft1 << time;
-	timeLeft = timeLeft1.str();
+	std::ostringstream healthLeft1;
+	healthLeft1 << gm->car->currentHealth;
+	healthLeft = healthLeft1.str();
 #endif
 
 	healthLabel->setString("Health: " + healthLeft);
@@ -349,7 +355,7 @@ void Game::update(float delta)
 			attack->setPositionX(attack->getPositionX() - 60 * delta);
 			magic->setPositionX(magic->getPositionX() - 60 * delta);
 			special->setPositionX(special->getPositionX() - 60 * delta);
-			if (attack->getPositionX() < origin.x + attack->getContentSize().width + (11 * visibleSize.width / 12) - attack->getContentSize().width)
+			if (attack->getPositionX() < origin.x + attack->getContentSize().width + visibleSize.width - (attack->getContentSize().width*gm->scaler))
 			{
 				moveButton = false;
 			}

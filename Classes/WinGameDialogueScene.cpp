@@ -1,5 +1,6 @@
 #include "WinGameDialogueScene.h"
-#include "CustomizeCarScene.h"
+#include "MainMenuScene.h"
+
 
 cocos2d::Scene* WinGameDialogueScene::createScene()
 {
@@ -37,7 +38,7 @@ bool WinGameDialogueScene::init()
 	GameManager* gm = GameManager::getInstance();
 
 
-	auto sprite = cocos2d::Sprite::create("Story.png");
+	auto sprite = cocos2d::Sprite::create("WinGameImage1.png");
 	sprite->setScale(gm->scaler);
 	sprite->setPosition
 	(
@@ -70,7 +71,7 @@ bool WinGameDialogueScene::init()
 			x++;
 			if (x == 1)
 			{
-				target->setTexture("Story2.png");
+				target->setTexture("WinGameImage2.png");
 			}
 			else
 			{
@@ -89,6 +90,6 @@ bool WinGameDialogueScene::init()
 
 void WinGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
-	
-	cocos2d::Director::getInstance()->end();// replaceScene(cocos2d::TransitionFade::create(2, CustomizeScene));
+	auto scene = MainMenuScene::createScene();
+	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionCrossFade::create(2, scene));
 }

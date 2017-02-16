@@ -1,5 +1,6 @@
 #include "MainMenuScene.h"
 #include "BeginningDialogueScene.h"
+#include "SimpleAudioEngine.h"
 
 cocos2d::Scene* MainMenuScene::createScene()
 {
@@ -32,6 +33,9 @@ bool MainMenuScene::init()
 
 	GameManager* gm = GameManager::getInstance();
 
+	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playBackgroundMusic("Audio/Track-1.mp3", true);
+
 	cocos2d::Director* director = cocos2d::Director::getInstance();
 
 	auto visibleSize = director->getVisibleSize();
@@ -52,8 +56,8 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + visibleSize.width/2,
-			origin.y + (visibleSize.height/2)
+			origin.x + (6 * visibleSize.width / 12),
+			origin.y + playGameButton->getContentSize().height / 2 + (4 * visibleSize.height / 8)
 		)
 	);
 
@@ -107,8 +111,8 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + visibleSize.width / 2,
-			origin.y + (visibleSize.height / 2) - 2 * visibleSize.height / 10
+			origin.x + (6 * visibleSize.width / 12),
+			origin.y + (2 * visibleSize.height / 8)
 		)
 	);
 
@@ -142,6 +146,9 @@ void MainMenuScene::goToOptions(cocos2d::Ref* pSender)
 void MainMenuScene::goToExit(cocos2d::Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
+
+	CocosDenshion::SimpleAudioEngine::end();
+
 	cocos2d::Director::getInstance()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

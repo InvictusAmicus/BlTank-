@@ -1,4 +1,6 @@
 #include "LoseGameDialogueScene.h"
+#include "MainMenuScene.h"
+
 
 cocos2d::Scene* LoseGameDialogueScene::createScene()
 {
@@ -36,7 +38,7 @@ bool LoseGameDialogueScene::init()
 	GameManager* gm = GameManager::getInstance();
 
 
-	auto sprite = cocos2d::Sprite::create("Story.png");
+	auto sprite = cocos2d::Sprite::create("LoseGameImage.png");
 	sprite->setScale(gm->scaler);
 	sprite->setPosition
 	(
@@ -66,15 +68,8 @@ bool LoseGameDialogueScene::init()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			x++;
-			if (x == 1)
-			{
-				target->setTexture("Story2.png");
-			}
-			else
-			{
-				goToCustomize(NULL);
-			}
+			auto scene = MainMenuScene::createScene();
+			director->replaceScene(cocos2d::TransitionCrossFade::create( 2, scene));
 			return true;
 		}
 		return false;
