@@ -10,7 +10,6 @@
 *	screen. This refers to the title display and the following buttons to
 *	navigate through:
 *	"Play Game"
-*	"Options"
 *	"Exit Game"
 */
 class MainMenuScene : public cocos2d::Layer
@@ -26,6 +25,9 @@ public:
 	void goToExit(cocos2d::Ref* pSender);
 
 	CREATE_FUNC(MainMenuScene);
+
+	cocos2d::Label* label;
+	float timer;
 };
 
 #endif
