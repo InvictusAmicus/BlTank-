@@ -34,6 +34,10 @@ bool Game::init()
 	}
 	srand(std::time(NULL));
 
+	/*
+	*	Create an instance of the cocos2dx Audio Engine
+	*	to play the battle bgm
+	*/
 	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->stopBackgroundMusic(true);
 	audio->playBackgroundMusic("Audio/Mabye-Boss-Battle.mp3", true);
@@ -96,7 +100,11 @@ bool Game::init()
 	this->addChild(player, 1);
 
 	std::string gh;
-
+/*
+*	to_string doesn't work on android devices so we
+*	create a stringstream to print the player's
+*	health on screen for android devices
+*/
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 	gh = std::to_string(gm->car->gameHealth);
 
@@ -199,6 +207,10 @@ bool Game::init()
 	return true;
 }
 
+/*
+*	When the player's health changes, we display
+*	the change on the screen
+*/
 void Game::changeHealth(int d)
 {
 	if (d < 0)
@@ -231,6 +243,10 @@ void Game::changeHealth(int d)
 	}
 }
 
+/*
+*	When the remaining in-game time changes, we display
+*	the change on the screen
+*/
 void Game::changeTimer(int d)
 {
 
@@ -255,6 +271,13 @@ void Game::changeTimer(int d)
 	}
 }
 
+/*
+*	In the update method, we move the buttons if they
+*	have been touched. It also changes labels and
+*	sends a signal that an attack has been
+*	requested. It also fades defeated bosses off
+*	of the screen
+*/
 void Game::update(float delta)
 {
 	cocos2d::Sprite* attack = (cocos2d::Sprite*)getChildByTag(attackButtonTag);
@@ -384,7 +407,9 @@ void Game::update(float delta)
 		}
 	}
 }
-
+/*
+*	Applies damage to the boss
+*/
 void Game::damageBoss(int damage)
 {
 	gm->levels.at(level)->health -= damage;
@@ -415,6 +440,9 @@ void Game::damageBoss(int damage)
 	}
 }
 
+/*
+*	Calculates the damage of a player's attack
+*/
 int Game::calculateDamage(int attack)
 {
 	Boss* b = gm->levels.at(level);

@@ -131,7 +131,9 @@ bool MainMenuScene::init()
 
 	return true;
 }
-
+/*
+*	Continue to the Game Scene
+*/
 void MainMenuScene::goToStory(cocos2d::Ref* pSender)
 {
 	auto StoryScene = BeginningDialogueScene::createScene();
@@ -143,6 +145,9 @@ void MainMenuScene::goToOptions(cocos2d::Ref* pSender)
 	CCLOG("Op Op Op");
 }
 
+/*
+*	Quit the game
+*/
 void MainMenuScene::goToExit(cocos2d::Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application

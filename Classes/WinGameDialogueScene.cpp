@@ -87,7 +87,9 @@ bool WinGameDialogueScene::init()
 	return true;
 }
 
-
+/*
+*	Go to the main menu
+*/
 void WinGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
 	auto scene = MainMenuScene::createScene();

@@ -4,6 +4,12 @@
 #include "cocos2d.h"
 #include "Car.h"
 
+
+/*
+*	The customize car scene lets the player
+*	pick the vehicle they wish to do battle
+*	with
+*/
 class CustomizeCarScene : public cocos2d::Layer
 {
 public:

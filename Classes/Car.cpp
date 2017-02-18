@@ -1,5 +1,8 @@
 #include "Car.h"
-
+/*
+*	Stores the variables of the player
+*	character for easier access
+*/
 Car::Car(std::string n)
 {
 	filename = n;

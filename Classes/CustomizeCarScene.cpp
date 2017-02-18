@@ -60,12 +60,18 @@ bool CustomizeCarScene::init()
 
 	current = 0;
 
-	
+	/*
+	*	adds the available options of character
+	*	to the vector holding all of the options
+	*/
 	cars.push_back(new Car("Blocky.png"));
 	cars.push_back(new Car("WhiteCar.png"));
 	cars.push_back(new Car("YellowCar.png"));
 
-
+	/*
+	*	Adds the current options stats to the array
+	*	so they can be displayed to the player
+	*/
 	statline[0] = cars.at(current)->health;
 	statline[1] = cars.at(current)->speed;
 	statline[2] = cars.at(current)->attack;
@@ -241,6 +247,10 @@ bool CustomizeCarScene::init()
 	return true;
 }
 
+/*
+*	Changes the counter to the previous car before
+*	calling the method to update visuals
+*/
 void CustomizeCarScene::goBackMenu(cocos2d::Ref* pSender)
 {
 	if (current == 0)
@@ -254,6 +264,10 @@ void CustomizeCarScene::goBackMenu(cocos2d::Ref* pSender)
 	changeCar();
 }
 
+/*
+*	Changes the counter to the next car before
+*	calling the method to update visuals
+*/
 void CustomizeCarScene::goForwardMenu(cocos2d::Ref* pSender)
 {
 	if (current == cars.size() - 1)
@@ -267,6 +281,11 @@ void CustomizeCarScene::goForwardMenu(cocos2d::Ref* pSender)
 	changeCar();
 }
 
+
+/*
+*	Changes the car shown on screen to the new current car before
+*	calling the method to update the visual stats
+*/
 void CustomizeCarScene::changeCar()
 {
 	cocos2d::Sprite* sprite = (cocos2d::Sprite*)getChildByTag(CARSPRITE);
@@ -275,13 +294,19 @@ void CustomizeCarScene::changeCar()
 	addStats();
 }
 
+/*
+*	Changes the stats shown on the screen to the current car's
+*	stats.
+*/
 void CustomizeCarScene::addStats()
 {
 	GameManager* gm = GameManager::getInstance();
 	cocos2d::Director* director = cocos2d::Director::getInstance();
 	auto visibleSize = director->getVisibleSize();
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
-
+	/*
+	*	Remove the currently shown sprites for stats
+	*/
 	for (int i = 0; i < statline[0]; i++)
 	{
 		if (getChildByTag(health1 + i) != NULL)
@@ -311,11 +336,17 @@ void CustomizeCarScene::addStats()
 		}
 	}
 
+	/*
+	*	Set the stat array to the new cars'
+	*/
 	statline[0] = cars.at(current)->health;
 	statline[1] = cars.at(current)->speed;
 	statline[2] = cars.at(current)->attack;
 	statline[3] = cars.at(current)->defence;
 
+	/*
+	* 	Add the stats for health
+	*/
 	for (int i = 0; i < statline[0]; i++)
 	{
 		auto statSprite = cocos2d::Sprite::create("StatPoint.png");
@@ -330,6 +361,9 @@ void CustomizeCarScene::addStats()
 		);
 		this->addChild(statSprite, 1, health1 + i);
 	}
+	/*
+	* 	Add the stats for speed
+	*/
 	for (int i = 0; i < statline[1]; i++)
 	{
 		auto statSprite = cocos2d::Sprite::create("StatPoint.png");
@@ -344,6 +378,10 @@ void CustomizeCarScene::addStats()
 		);
 		this->addChild(statSprite, 1, speed1 + i);
 	}
+	
+	/*
+	* 	Add the stats for attack
+	*/
 	for (int i = 0; i < statline[2]; i++)
 	{
 		auto statSprite = cocos2d::Sprite::create("StatPoint.png");
@@ -358,6 +396,10 @@ void CustomizeCarScene::addStats()
 		);
 		this->addChild(statSprite, 1, attack1 + i);
 	}
+	
+	/*
+	* 	Add the stats for defence
+	*/
 	for (int i = 0; i < statline[3]; i++)
 	{
 		auto statSprite = cocos2d::Sprite::create("StatPoint.png");
@@ -374,7 +416,9 @@ void CustomizeCarScene::addStats()
 	}
 	
 }
-
+/*
+*	Take the player to the battle scene
+*/
 void CustomizeCarScene::goToGame(cocos2d::Ref* pSender)
 {
 	GameManager* gm = GameManager::getInstance();
