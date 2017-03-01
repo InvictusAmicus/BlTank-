@@ -41,6 +41,20 @@ bool MainMenuScene::init()
 	auto visibleSize = director->getVisibleSize();
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
 
+	auto bg = cocos2d::Sprite::create("MainMenu.png");
+	bg->setScale(gm->scaler);
+	CCLOG("VIS SIZE:\t%f", visibleSize.width);
+	bg->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + (6 * visibleSize.width / 12),
+			origin.y + (4 * visibleSize.height / 8)
+		)
+	);
+	this->addChild(bg, 1);
+
+
 	auto playGameButton = cocos2d::MenuItemImage::create
 	(
 		"PlayGameButton.png",
@@ -56,8 +70,8 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (6 * visibleSize.width / 12),
-			origin.y + playGameButton->getContentSize().height / 2 + (4 * visibleSize.height / 8)
+			origin.x + (2.5 * visibleSize.width / 12),
+			origin.y + (2 * visibleSize.height / 8)
 		)
 	);
 
@@ -111,7 +125,7 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (6 * visibleSize.width / 12),
+			origin.x + (5.5 * visibleSize.width / 12),
 			origin.y + (2 * visibleSize.height / 8)
 		)
 	);
@@ -120,20 +134,9 @@ bool MainMenuScene::init()
 	exitMenu->setPosition(cocos2d::Vec2::ZERO);
 	this->addChild(exitMenu, 1);
 
-	auto label = cocos2d::Label::createWithTTF("DPS Race", "fonts/Marker Felt.ttf", 24);
-
-	// position the label on the center of the screen
-	label->setPosition(cocos2d::Vec2(origin.x + visibleSize.width / 2,
-		origin.y + visibleSize.height - label->getContentSize().height));
-
-	// add the label as a child to this layer
-	this->addChild(label, 1);
-
 	return true;
 }
-/*
-*	Continue to the Game Scene
-*/
+
 void MainMenuScene::goToStory(cocos2d::Ref* pSender)
 {
 	auto StoryScene = BeginningDialogueScene::createScene();
@@ -145,9 +148,6 @@ void MainMenuScene::goToOptions(cocos2d::Ref* pSender)
 	CCLOG("Op Op Op");
 }
 
-/*
-*	Quit the game
-*/
 void MainMenuScene::goToExit(cocos2d::Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application

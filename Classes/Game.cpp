@@ -9,7 +9,7 @@
 #define magicButtonTag 1011
 #define specialButtonTag 1012
 
-
+#define BOSSHEALTH 11111
 
 cocos2d::Scene* Game::createScene()
 {
@@ -34,10 +34,6 @@ bool Game::init()
 	}
 	srand(std::time(NULL));
 
-	/*
-	*	Create an instance of the cocos2dx Audio Engine
-	*	to play the battle bgm
-	*/
 	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->stopBackgroundMusic(true);
 	audio->playBackgroundMusic("Audio/Mabye-Boss-Battle.mp3", true);
@@ -48,7 +44,19 @@ bool Game::init()
 	gm = GameManager::getInstance();
 	gm->addBosses();
 	Car* car = gm->car;
-	Boss* boy = gm->levels.at(0);
+//	Boss* boy = gm->levels.at(0);
+
+	auto background = cocos2d::Sprite::create("Finished_Images/BattleBackground.png");
+	background->setScale(gm->scaler);
+	background->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + visibleSize.width/2,// - (background->getContentSize().width / 2),
+			origin.y + visibleSize.height/2// - background->getContentSize().height / 2
+		)
+	);
+	this->addChild(background, 1);
 
 	auto attackButton = cocos2d::Sprite::create("Attack.png");
 	attackButton->setScale(gm->scaler);
@@ -56,7 +64,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + attackButton->getContentSize().width + visibleSize.width - (attackButton->getContentSize().width*gm->scaler),
+			origin.x + visibleSize.width - (attackButton->getContentSize().width/2*gm->scaler),
 			origin.y + attackButton->getContentSize().height / 4 + (6 * visibleSize.height / 8)
 		)
 	);
@@ -68,7 +76,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + magicButton->getContentSize().width + visibleSize.width - (magicButton->getContentSize().width*gm->scaler),
+			origin.x +visibleSize.width - (magicButton->getContentSize().width/2*gm->scaler),
 			origin.y + magicButton->getContentSize().height / 4 + (4 * visibleSize.height / 8)
 		)
 	);
@@ -81,30 +89,26 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + specialButton->getContentSize().width + visibleSize.width - (specialButton->getContentSize().width*gm->scaler),
+			origin.x + visibleSize.width - ((specialButton->getContentSize().width/2)*gm->scaler),
 			origin.y + specialButton->getContentSize().height / 4 + (2 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(specialButton, 1, specialButtonTag);
 
 	auto player = cocos2d::Sprite::create(gm->car->filename);
-	player->setScale(gm->scaler);
+	player->setScale(gm->scaler/2);
 	player->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (7 * visibleSize.width / 12),
-			origin.y + (4 * visibleSize.height / 8)
+			origin.x + (8 * visibleSize.width / 12),
+			origin.y + (3 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(player, 1);
 
 	std::string gh;
-/*
-*	to_string doesn't work on android devices so we
-*	create a stringstream to print the player's
-*	health on screen for android devices
-*/
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 	gh = std::to_string(gm->car->gameHealth);
 
@@ -113,13 +117,14 @@ bool Game::init()
 	gh1 << gm->car->gameHealth;
 	gh = gh1.str();
 #endif
-	healthLabel = cocos2d::Label::createWithTTF("Health: " + gh, "fonts/arial.ttf", 16);
+	healthLabel = cocos2d::Label::createWithTTF("Player Health: " + gh, "fonts/arial.ttf", 12);
 	healthLabel->setScale(gm->scaler);
+	healthLabel->setColor(cocos2d::Color3B::GREEN);
 	healthLabel->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (8 * visibleSize.width / 12) - healthLabel->getContentSize().width / 2,
+			origin.x + (9 * visibleSize.width / 12) - healthLabel->getContentSize().width / 2,
 			origin.y + ( visibleSize.height / 8) - healthLabel->getContentSize().height / 2
 		)
 	);
@@ -131,13 +136,67 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (2.5 * visibleSize.width / 12) - bossSprite->getContentSize().width / 2,
+			origin.x + (3 * visibleSize.width / 12) - bossSprite->getContentSize().width / 2,
 			origin.y + (4.5 * visibleSize.height / 8) - bossSprite->getContentSize().height / 2
 		)
 	);
 	this->addChild(bossSprite, 1);
-	player->setScale(gm->scaler);
+
+	auto bossLabel = cocos2d::Label::createWithTTF("Boss Health: " ,"fonts/arial.ttf", 12);
+	bossLabel->setScale(gm->scaler);
+	bossLabel->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + 0.05*visibleSize.width + bossLabel->getContentSize().width * gm->scaler / 2,
+			origin.y + (1.75 * visibleSize.height / 8) - bossLabel->getContentSize().height / 2
+		)
+	);
+	this->addChild(bossLabel, 1);
+
+	auto emptyHealth = cocos2d::Sprite::create("HealthNone.png");
+	emptyHealth->setScale(gm->scaler);
+	emptyHealth->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + emptyHealth->getContentSize().width * gm->scaler / 2,
+			origin.y + (visibleSize.height / 8) - emptyHealth->getContentSize().height / 2
+		)
+	);
+	this->addChild(emptyHealth, 1);
+
+	auto bossHealth = cocos2d::Sprite::create("Health2.png");
+	bossHealth->setScale(gm->scaler);
+	bossHealth->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + bossHealth->getContentSize().width * gm->scaler / 2,
+			origin.y + (visibleSize.height / 8) - bossHealth->getContentSize().height / 2
+		)
+	);
+	this->addChild(bossHealth, 1, BOSSHEALTH);
+	startPosOfBossHealth = bossHealth->getContentSize().width * gm->scaler;
+
+
+
+
+//	player->setScale(gm->scaler);
 	
+	auto clock = cocos2d::Sprite::create("Clock.png");//, "fonts/Clock.ttf", 16);
+	clock->setScale(gm->scaler);
+	clock->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + (6 * visibleSize.width / 12),
+			origin.y + (7.5 * visibleSize.height / 8)
+		)
+	);
+	this->addChild(clock, 1);
+
+
 	std::string timeLeft;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
@@ -148,13 +207,14 @@ bool Game::init()
 	timeLeft1 << time;
 	timeLeft = timeLeft1.str();
 #endif
-	timerLabel = cocos2d::Label::createWithTTF(timeLeft, "fonts/arial.ttf", 16);
+	timerLabel = cocos2d::Label::createWithTTF(timeLeft, "fonts/Clock.ttf", 16);
+	timerLabel->setColor(cocos2d::Color3B::BLACK);
 	timerLabel->setScale(gm->scaler);
 	timerLabel->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (6 * visibleSize.width / 12) - timerLabel->getContentSize().width / 2,
+			origin.x + (6 * visibleSize.width / 12),
 			origin.y + (7.5 * visibleSize.height / 8)
 		)
 	);
@@ -207,13 +267,9 @@ bool Game::init()
 	return true;
 }
 
-/*
-*	When the player's health changes, we display
-*	the change on the screen
-*/
 void Game::changeHealth(int d)
 {
-	if (d < 0)
+	if (d <= 0)
 	{
 		changeTimer(200 / gm->car->currentSpeed);
 	}
@@ -243,10 +299,6 @@ void Game::changeHealth(int d)
 	}
 }
 
-/*
-*	When the remaining in-game time changes, we display
-*	the change on the screen
-*/
 void Game::changeTimer(int d)
 {
 
@@ -264,20 +316,13 @@ void Game::changeTimer(int d)
 
 	timerLabel->setString(timeLeft);
 
-	if (time < 0)
+	if (time <= 0)
 	{
 		auto StoryScene = LoseGameDialogueScene::createScene();
 		cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 	}
 }
 
-/*
-*	In the update method, we move the buttons if they
-*	have been touched. It also changes labels and
-*	sends a signal that an attack has been
-*	requested. It also fades defeated bosses off
-*	of the screen
-*/
 void Game::update(float delta)
 {
 	cocos2d::Sprite* attack = (cocos2d::Sprite*)getChildByTag(attackButtonTag);
@@ -288,34 +333,34 @@ void Game::update(float delta)
 	{
 		if (buttonPushed)
 		{
-			attack->setPositionX(attack->getPositionX() + 60 * delta);
-			magic->setPositionX(magic->getPositionX() + 60 * delta);
-			special->setPositionX(special->getPositionX() + 60 * delta);
-			if (attack->getPositionX() > director->getVisibleSize().width + attack->getContentSize().width)
+			attack->setPositionX(attack->getPositionX() + 100 * delta);
+			magic->setPositionX(magic->getPositionX() + 100 * delta);
+			special->setPositionX(special->getPositionX() + 100 * delta);
+			if (attack->getPositionX() > director->getVisibleSize().width + (gm->scaler * attack->getContentSize().width)/2 )
 			{
 				buttonPushed = false;
 				if (buttonLayer == 0)
 				{
 					if (buttonClicked == 0)
 					{
-						attack->setTexture("SwordPunch.png");
-						magic->setTexture("HitchhikeStrike.png");
+						attack->setTexture("Slash.png");
+						magic->setTexture("Strike.png");
 						special->setTexture("Back.png");
 						attMagSpe = 0;
 						buttonLayer++;
 					}
 					else if (buttonClicked == 1)
 					{
-						attack->setTexture("Thunder.png");
-						magic->setTexture("Heal.png");
+						attack->setTexture(gm->car->magic);
+						magic->setTexture("Cure.png");
 						special->setTexture("Back.png");
 						attMagSpe = 1;
 						buttonLayer++;
 					}
 					else if (buttonClicked == 2)
 					{
-						attack->setTexture("EnlightenedQuestioning.png");
-						magic->setTexture("HeavenGaze.png");
+						attack->setTexture(gm->car->special1);
+						magic->setTexture(gm->car->special2);
 						special->setTexture("Back.png");
 						attMagSpe = 2;
 						buttonLayer++;
@@ -375,18 +420,33 @@ void Game::update(float delta)
 		}
 		if (!buttonPushed && moveButton)
 		{
-			attack->setPositionX(attack->getPositionX() - 60 * delta);
-			magic->setPositionX(magic->getPositionX() - 60 * delta);
-			special->setPositionX(special->getPositionX() - 60 * delta);
-			if (attack->getPositionX() < origin.x + attack->getContentSize().width + visibleSize.width - (attack->getContentSize().width*gm->scaler))
+			attack->setPositionX(attack->getPositionX() - 100 * delta);
+			magic->setPositionX(magic->getPositionX() - 100 * delta);
+			special->setPositionX(special->getPositionX() - 100 * delta);
+			if (attack->getPositionX() < origin.x + visibleSize.width - (attack->getContentSize().width/2*gm->scaler))
 			{
 				moveButton = false;
 			}
 		}	
 	}
+
+	float percentageMoved = 100 - (100 * ((getChildByTag(BOSSHEALTH)->getPositionX() + startPosOfBossHealth/2) / startPosOfBossHealth));
+	
+	CCLOG("percent damage:\t%f\npercent moved:\t%f", percentDamageToBoss , percentageMoved);
+
+	if (percentDamageToBoss > percentageMoved)
+	{
+		getChildByTag(BOSSHEALTH)->setPositionX
+		(
+			getChildByTag(BOSSHEALTH)->getPositionX() - 100 * delta
+		);
+	}
+
 	if (transform)
 	{
+		getChildByTag(BOSSHEALTH)->setOpacity(bossSprite->getOpacity() - 128 * delta);
 		bossSprite->setOpacity(bossSprite->getOpacity() - 128 * delta);
+
 		if (bossSprite->getOpacity() < 2)
 		{
 			transform = false;
@@ -394,11 +454,21 @@ void Game::update(float delta)
 		if (!transform)
 		{
 			bossSprite->setTexture(gm->levels.at(level)->filename);
+			percentDamageToBoss = 0;
+			getChildByTag(BOSSHEALTH)->setPosition
+			(
+				cocos2d::Vec2
+				(
+					origin.x + getChildByTag(BOSSHEALTH)->getContentSize().width * gm->scaler / 2,
+					origin.y + (visibleSize.height / 8) - getChildByTag(BOSSHEALTH)->getContentSize().height / 2
+				)
+			);
 			transformBack = true;
 		}
 	}
 	if (transformBack)
 	{
+		getChildByTag(BOSSHEALTH)->setOpacity(bossSprite->getOpacity() + 128 * delta);
 		bossSprite->setOpacity(bossSprite->getOpacity() + 128 * delta);
 		if (bossSprite->getOpacity() > 253)
 		{
@@ -407,12 +477,11 @@ void Game::update(float delta)
 		}
 	}
 }
-/*
-*	Applies damage to the boss
-*/
+
 void Game::damageBoss(int damage)
 {
 	gm->levels.at(level)->health -= damage;
+	percentDamageToBoss += 100 * damage / gm->levels.at(level)->totalHealth;
 	if (gm->levels.at(level)->health <= 0)
 	{
 		bool ready = false;
@@ -424,25 +493,17 @@ void Game::damageBoss(int damage)
 		}
 		else if (level == 1)
 		{
-
 			auto StoryScene = WinGameDialogueScene::createScene();
 			cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 		}
 	}
 	else
 	{
-		int returnDamage = rand() % 100 + (gm->levels.at(level)->attack) - (gm->car->currentDefence);
-		if (returnDamage < 10)
-		{
-			returnDamage += 70;
-		}
+		int returnDamage = bossAI();
 		changeHealth(returnDamage);
 	}
 }
 
-/*
-*	Calculates the damage of a player's attack
-*/
 int Game::calculateDamage(int attack)
 {
 	Boss* b = gm->levels.at(level);
@@ -476,12 +537,111 @@ int Game::calculateDamage(int attack)
 		if (c->currentSpeed < 100)
 		{
 			c->currentSpeed += 10;
-		}changeTimer(35 - 3 * (c->currentSpeed / 10));
+		}
+		changeTimer(35 - 3 * (c->currentSpeed / 10));
 	}
 	if (damage < 0)
 	{
 		damage *= -1;
 	}
-	CCLOG("%d     %d", damage, attack);
 	return damage;
+}
+
+int Game::bossAI()
+{
+	GameManager* gm = GameManager::getInstance();
+	Boss* b = gm->levels.at(level);
+	Car* c = gm->car;
+
+	int returnDamage;
+	int randomNoise;
+	int random = rand() % 100;
+	if ( 1 - (b->health / b->totalHealth) > .3)
+	{
+		randomNoise = 10 - rand() % 70;
+		
+		if (random > 95)
+		{
+			//special attack
+			returnDamage = (b->attack * 4) - c->currentDefence/2;
+		}
+		else if (random > 70)
+		{
+			//headbutt
+			returnDamage = (b->attack * 3) - c->currentDefence;
+		}
+		else
+		{
+			//claw
+			returnDamage = (b->attack * 2) - c->currentDefence;
+		}
+	}
+	else if (1 - (b->health / b->totalHealth) > .6)
+	{
+		randomNoise = 10 - rand() % 60;
+
+		if (random > 85)
+		{
+			//special attack
+			returnDamage = (b->attack * 4) - c->currentDefence / 2;
+		}
+		else if (random > 55)
+		{
+			//headbutt
+			returnDamage = (b->attack * 3) - c->currentDefence;
+		}
+		else
+		{
+			//claw
+			returnDamage = (b->attack * 2) - c->currentDefence;
+		}
+	}
+	else if (1 - (b->health / b->totalHealth) > .8)
+	{
+		randomNoise = 10 - rand() % 50;
+
+		if (random > 60)
+		{
+			//special attack
+			returnDamage = (b->attack * 4) - c->currentDefence / 2;
+
+		}
+		else if (random > 30)
+		{
+			//headbutt
+			returnDamage = (b->attack * 3) - c->currentDefence;
+		}
+		else
+		{
+			//claw
+			returnDamage = (b->attack * 2) - c->currentDefence;
+		}
+	}
+	else
+	{
+		randomNoise = 10 - rand() % 30;
+
+		if (random > 40)
+		{
+			//special attack
+			returnDamage = (b->attack * 4) - c->currentDefence / 2;
+		}
+		else if (random > 15)
+		{
+			//headbutt
+			returnDamage = (b->attack * 3) - c->currentDefence;
+		}
+		else
+		{
+			//claw
+			returnDamage = (b->attack * 2) - c->currentDefence;
+		}
+	}
+	returnDamage += randomNoise;
+	if (returnDamage < 0)
+	{
+		returnDamage *= -1;
+	}
+
+	return returnDamage;
 }

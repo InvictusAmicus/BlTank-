@@ -1,12 +1,9 @@
 #include "Car.h"
-/*
-*	Stores the variables of the player
-*	character for easier access
-*/
+
 Car::Car(std::string n)
 {
 	filename = n;
-	if (filename == "Blocky.png")
+	if (filename == "Finished_Images/Player_1_120x80.png")
 	{
 		health = 5;
 		speed = 1;
@@ -21,8 +18,12 @@ Car::Car(std::string n)
 		currentAttack = gameAttack;
 		currentDefence = gameDefence;
 
+		magic = "Ice.png";
+		special1 = "P1Special1.png";
+		special2 = "P1Special2.png";
+
 	}
-	else if (filename == "WhiteCar.png")
+	else if (filename == "Finished_Images/Player_2_120x80.png")
 	{
 		health = 4;
 		speed = 3;
@@ -36,8 +37,12 @@ Car::Car(std::string n)
 		currentSpeed = gameSpeed;
 		currentAttack = gameAttack;
 		currentDefence = gameDefence;
+
+		magic = "Fire.png";
+		special1 = "P2Special1.png";
+		special2 = "P2Special2.png";
 	}
-	else if (filename == "YellowCar.png")
+	else if (filename == "Finished_Images/Player_3_120x80.png")
 	{
 		health = 3;
 		speed = 2;
@@ -52,6 +57,9 @@ Car::Car(std::string n)
 		currentAttack = gameAttack;
 		currentDefence = gameDefence;
 
+		magic = "Thunder.png";
+		special1 = "P3Special1.png";
+		special2 = "P3Special2.png";
 	}
 
 }

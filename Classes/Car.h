@@ -20,6 +20,10 @@ public:
 	int currentAttack;
 	int currentDefence;
 
+	std::string magic;
+	std::string special1;
+	std::string special2;
+
 	Car(std::string n);
 	~Car();
 

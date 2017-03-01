@@ -1,29 +1,22 @@
 #include "Boss.h"
 
-/*
-*	This class stores the information on the bosses to make it easier to access it
-*/
 Boss::Boss(std::string n)
 {
 	filename = n;
-	/*
-	*	Info on Boss 1
-	*/
-	if (filename == "Level1.png")
+	if (filename == "GOD1Aura.png")
 	{
+		totalHealth = 1000;
 		health = 1000;
 		speed = 20;
 		attack = 30;
 		defence = 25;
 	}
-	/*
-	*	Info on Boss 2
-	*/
 	else
 	{
+		totalHealth = 2500;
 		health = 2500;
 		speed = 30;
-		attack = 60;
+		attack = 50;
 		defence = 35;
 	}
 }

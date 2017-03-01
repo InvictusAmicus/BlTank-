@@ -11,6 +11,8 @@ private:
 	int level;
 	bool buttonPushed = false, moveButton = false, transform = false, transformBack = false;
 	int buttonLayer = 0, buttonClicked = 0, attMagSpe = 0;
+	float percentDamageToBoss = 0;
+	float startPosOfBossHealth;
 	cocos2d::Label* timerLabel;
 	cocos2d::Label* healthLabel;
 	cocos2d::Sprite* bossSprite;
@@ -23,7 +25,6 @@ private:
 	void damageBoss(int damage);
 	int calculateDamage(int atttack);
 
-
 public:
 	static cocos2d::Scene* createScene();
 
@@ -34,6 +35,7 @@ public:
 
 	void changeTimer(int d);
 	void changeHealth(int d);
+	int bossAI();
 
 
 };

@@ -1,13 +1,10 @@
 #include "GameManager.h"
 
 static GameManager* gm;
-/*
-*	A singleton class used to transport game
-*	objects needed in multiple classes
-*/
+
 GameManager::GameManager()
 {
-	scaler = cocos2d::Director::getInstance()->getVisibleSize().width / 480;
+	scaler =  2* (cocos2d::Director::getInstance()->getVisibleSize().width / 480);
 
 }
 
@@ -38,8 +35,8 @@ void GameManager::addBosses()
 {
 	levels.clear();
 
-	levels.push_back(new Boss("Level1.png"));
-	levels.push_back(new Boss("Level2.png"));
+	levels.push_back(new Boss("GOD1Aura.png"));
+	levels.push_back(new Boss("GOD2Aura.png"));
 
 
 }

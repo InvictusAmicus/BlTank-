@@ -80,10 +80,7 @@ bool LoseGameDialogueScene::init()
 	return true;
 }
 
-/*
-*	Go to the main menu
-*	
-*/
+
 void LoseGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
 

@@ -34,40 +34,27 @@ bool BeginningDialogueScene::init()
 	auto visibleSize = director->getVisibleSize();
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
 
-	/*	
-	*	Create an instance of the Game Manager
-	*	If this is the first call to getInstance(),
-	*	create the Game Manager
-	*/
 	GameManager* gm = GameManager::getInstance();
 
-	/*
-	*	This block of code creates the sprite for the story
-	*	sets its position and puts it in the game scene.
-	*/
-	auto sprite = cocos2d::Sprite::create("Story.png");
+
+	auto sprite = cocos2d::Sprite::create("StoryP1.png");
 	sprite -> setScale(gm->scaler);
 	sprite->setPosition
 	(
 		cocos2d::Vec2
 		(
 			origin.x + visibleSize.width / 2,
-			origin.y + visibleSize.height / 2
+			origin.y + visibleSize.height / 2// - 20
 		)
 	);
+
 	this->addChild(sprite, 1);
 
-	/*
-	*	Creates the event listener that listens for user
-	*	input. In this case, it is a touch listener, as it
-	*	works with PC (mouse clicks) and android phones
-	*	(screen touches)
-	*/
+	CCLOG("BG width: %f\nBG SIZE: %f", sprite->getContentSize().width, sprite->getContentSize().width * gm->scaler);
+
 	auto listener1 = cocos2d::EventListenerTouchOneByOne::create();
 	listener1->setSwallowTouches(true);
-	/*
-	*	Says what to do when a touch is detected
-	*/
+
 	listener1->onTouchBegan = [=](cocos2d::Touch* touch, cocos2d::Event* event)
 	{
 		static int x = 0;
@@ -80,19 +67,21 @@ bool BeginningDialogueScene::init()
 		float originalXPos = target->getPosition().x;
 		float originalYPos = target->getPosition().y;
 
-		/*
-		*	If the touch was on the story image,
-		*	advance the game
-		*/
 		if (rect.containsPoint(locationInNode))
 		{
 			x++;
 			if (x == 1)
 			{
-				target->setTexture("Story2.png");
+				target->setTexture("StoryP2.png");
 			}
+			else if (x == 2)
+			{
+				target->setTexture("StoryP3.png");
+			}
+
 			else
 			{
+				x = 0;
 				goToCustomize(NULL);
 			}
 			return true;
@@ -100,18 +89,12 @@ bool BeginningDialogueScene::init()
 		return false;
 		
 	};
-	// add the eventlistener into the scene
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, sprite);
 
 	return true;
 }
 
-/*
-*	This method calls the director to take the
-*	game to the next stage of the game, the
-*	scene where the player chooses the character
-*	 they want to play as.
-*/
+
 void BeginningDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
 	auto CustomizeScene = CustomizeCarScene::createScene();

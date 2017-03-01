@@ -38,7 +38,7 @@ bool WinGameDialogueScene::init()
 	GameManager* gm = GameManager::getInstance();
 
 
-	auto sprite = cocos2d::Sprite::create("WinGameImage1.png");
+	auto sprite = cocos2d::Sprite::create("WinGameImage.png");
 	sprite->setScale(gm->scaler);
 	sprite->setPosition
 	(
@@ -87,9 +87,7 @@ bool WinGameDialogueScene::init()
 	return true;
 }
 
-/*
-*	Go to the main menu
-*/
+
 void WinGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
 	auto scene = MainMenuScene::createScene();

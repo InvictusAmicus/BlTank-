@@ -4,12 +4,6 @@
 #include "cocos2d.h"
 #include "GameManager.h"
 
-
-/*
-*	This class displays to the user two png
-*	images that set the scene of the battles
-*	to come.
-*/
 class BeginningDialogueScene : public cocos2d::Layer
 {
 public:

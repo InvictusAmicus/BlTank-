@@ -9,6 +9,7 @@ class Boss
 public:
 
 	std::string filename;
+	int totalHealth;
 	int health;
 	int speed;
 	int attack;
