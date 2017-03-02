@@ -48,7 +48,6 @@ bool LoseGameDialogueScene::init()
 			origin.y + visibleSize.height / 2// - 20
 		)
 	);
-
 	this->addChild(sprite, 1);
 
 	auto listener1 = cocos2d::EventListenerTouchOneByOne::create();

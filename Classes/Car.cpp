@@ -21,6 +21,9 @@ Car::Car(std::string n)
 		magic = "Ice.png";
 		special1 = "P1Special1.png";
 		special2 = "P1Special2.png";
+		midStoryScene = "MidGameImage2.png";
+		endStoryScene = "BlizzEnding.png";
+
 
 	}
 	else if (filename == "Finished_Images/Player_2_120x80.png")
@@ -41,6 +44,8 @@ Car::Car(std::string n)
 		magic = "Fire.png";
 		special1 = "P2Special1.png";
 		special2 = "P2Special2.png";
+		midStoryScene = "MidGameImage2.png";
+		endStoryScene = "FireEnding.png";
 	}
 	else if (filename == "Finished_Images/Player_3_120x80.png")
 	{
@@ -60,6 +65,8 @@ Car::Car(std::string n)
 		magic = "Thunder.png";
 		special1 = "P3Special1.png";
 		special2 = "P3Special2.png";
+		midStoryScene = "MidGameImage3.png";
+		endStoryScene = "ThEnding.png";
 	}
 
 }

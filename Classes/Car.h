@@ -24,6 +24,9 @@ public:
 	std::string special1;
 	std::string special2;
 
+	std::string midStoryScene;
+	std::string endStoryScene;
+
 	Car(std::string n);
 	~Car();
 

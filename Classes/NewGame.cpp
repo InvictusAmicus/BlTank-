@@ -1,5 +1,5 @@
-#include "Game.h"
-#include "MidGameDialogueScene.h"
+#include "NewGame.h"
+#include "WinGameDialogueScene.h"
 #include "LoseGameDialogueScene.h"
 #include "SimpleAudioEngine.h"
 #include <sstream>
@@ -13,7 +13,7 @@
 
 
 
-cocos2d::Scene* Game::createScene()
+cocos2d::Scene* NewGame::createScene()
 {
 	/*
 	*	Create a scene from the cocos2d library that will hold the
@@ -22,13 +22,13 @@ cocos2d::Scene* Game::createScene()
 	*	the title screen
 	*/
 	auto scene = cocos2d::Scene::create();
-	auto layer = Game::create();
+	auto layer = NewGame::create();
 	scene->addChild(layer);
 
 	return scene;
 }
 
-bool Game::init()
+bool NewGame::init()
 {
 	if (!Layer::init())
 	{
@@ -44,18 +44,18 @@ bool Game::init()
 	level = 0;
 	scheduleUpdate();
 	gm = GameManager::getInstance();
-	gm->addBosses();
+	gm->addFinalBoss();
 	Car* car = gm->car;
-//	Boss* boy = gm->levels.at(0);
+	//	Boss* boy = gm->levels.at(0);
 
-	auto background = cocos2d::Sprite::create("Finished_Images/BattleBackground.png");
+	auto background = cocos2d::Sprite::create("Finished_Images/BattleBackground2.png");
 	background->setScale(gm->scaler);
 	background->setPosition
 	(
 		cocos2d::Vec2
 		(
-			origin.x + visibleSize.width/2,// - (background->getContentSize().width / 2),
-			origin.y + visibleSize.height/2// - background->getContentSize().height / 2
+			origin.x + visibleSize.width / 2,// - (background->getContentSize().width / 2),
+			origin.y + visibleSize.height / 2// - background->getContentSize().height / 2
 		)
 	);
 	this->addChild(background, 1);
@@ -66,7 +66,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + visibleSize.width - (attackButton->getContentSize().width/2*gm->scaler),
+			origin.x + visibleSize.width - (attackButton->getContentSize().width / 2 * gm->scaler),
 			origin.y + attackButton->getContentSize().height / 4 + (6 * visibleSize.height / 8)
 		)
 	);
@@ -78,7 +78,7 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x +visibleSize.width - (magicButton->getContentSize().width/2*gm->scaler),
+			origin.x + visibleSize.width - (magicButton->getContentSize().width / 2 * gm->scaler),
 			origin.y + magicButton->getContentSize().height / 4 + (4 * visibleSize.height / 8)
 		)
 	);
@@ -91,20 +91,20 @@ bool Game::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + visibleSize.width - ((specialButton->getContentSize().width/2)*gm->scaler),
+			origin.x + visibleSize.width - ((specialButton->getContentSize().width / 2)*gm->scaler),
 			origin.y + specialButton->getContentSize().height / 4 + (2 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(specialButton, 1, specialButtonTag);
 
 	auto player = cocos2d::Sprite::create(gm->car->filename);
-	player->setScale(gm->scaler/2);
+	player->setScale(gm->scaler);
 	player->setPosition
 	(
 		cocos2d::Vec2
 		(
 			origin.x + (8 * visibleSize.width / 12),
-			origin.y + (3 * visibleSize.height / 8)
+			origin.y + (4 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(player, 1);
@@ -127,24 +127,25 @@ bool Game::init()
 		cocos2d::Vec2
 		(
 			origin.x + (9 * visibleSize.width / 12) - healthLabel->getContentSize().width / 2,
-			origin.y + ( visibleSize.height / 8) - healthLabel->getContentSize().height / 2
+			origin.y + (visibleSize.height / 8) - healthLabel->getContentSize().height / 2
 		)
 	);
 	this->addChild(healthLabel, 1);
 
 	bossSprite = cocos2d::Sprite::create(gm->levels.at(0)->filename);
-	bossSprite->setScale(gm->scaler * 2);
+	bossSprite->setScale(gm->scaler);
 	bossSprite->setPosition
 	(
 		cocos2d::Vec2
 		(
 			origin.x + (3 * visibleSize.width / 12) - bossSprite->getContentSize().width / 2,
-			origin.y + (4.5 * visibleSize.height / 8) - bossSprite->getContentSize().height / 2
+			//origin.y + (4.5 * visibleSize.height / 8) - bossSprite->getContentSize().height / 2
+			origin.y + (4 * visibleSize.height / 8)
 		)
 	);
 	this->addChild(bossSprite, 1);
 
-	auto bossLabel = cocos2d::Label::createWithTTF("Boss Health: " ,"fonts/arial.ttf", 12);
+	auto bossLabel = cocos2d::Label::createWithTTF("Boss Health: ", "fonts/arial.ttf", 12);
 	bossLabel->setScale(gm->scaler);
 	bossLabel->setPosition
 	(
@@ -181,11 +182,6 @@ bool Game::init()
 	this->addChild(bossHealth, 1, BOSSHEALTH);
 	startPosOfBossHealth = bossHealth->getContentSize().width * gm->scaler;
 
-
-
-
-//	player->setScale(gm->scaler);
-	
 	auto clock = cocos2d::Sprite::create("Clock.png");//, "fonts/Clock.ttf", 16);
 	clock->setScale(gm->scaler);
 	clock->setPosition
@@ -269,7 +265,7 @@ bool Game::init()
 	return true;
 }
 
-void Game::changeHealth(int d)
+void NewGame::changeHealth(int d)
 {
 	if (d <= 0)
 	{
@@ -301,7 +297,7 @@ void Game::changeHealth(int d)
 	}
 }
 
-void Game::changeTimer(int d)
+void NewGame::changeTimer(int d)
 {
 
 	time -= d;
@@ -325,7 +321,7 @@ void Game::changeTimer(int d)
 	}
 }
 
-void Game::update(float delta)
+void NewGame::update(float delta)
 {
 	cocos2d::Sprite* attack = (cocos2d::Sprite*)getChildByTag(attackButtonTag);
 	cocos2d::Sprite* magic = (cocos2d::Sprite*)getChildByTag(magicButtonTag);
@@ -338,7 +334,7 @@ void Game::update(float delta)
 			attack->setPositionX(attack->getPositionX() + 100 * delta);
 			magic->setPositionX(magic->getPositionX() + 100 * delta);
 			special->setPositionX(special->getPositionX() + 100 * delta);
-			if (attack->getPositionX() > director->getVisibleSize().width + (gm->scaler * attack->getContentSize().width)/2 )
+			if (attack->getPositionX() > director->getVisibleSize().width + (gm->scaler * attack->getContentSize().width) / 2)
 			{
 				buttonPushed = false;
 				if (buttonLayer == 0)
@@ -425,16 +421,16 @@ void Game::update(float delta)
 			attack->setPositionX(attack->getPositionX() - 100 * delta);
 			magic->setPositionX(magic->getPositionX() - 100 * delta);
 			special->setPositionX(special->getPositionX() - 100 * delta);
-			if (attack->getPositionX() < origin.x + visibleSize.width - (attack->getContentSize().width/2*gm->scaler))
+			if (attack->getPositionX() < origin.x + visibleSize.width - (attack->getContentSize().width / 2 * gm->scaler))
 			{
 				moveButton = false;
 			}
-		}	
+		}
 	}
 
-	float percentageMoved = 100 - (100 * ((getChildByTag(BOSSHEALTH)->getPositionX() + startPosOfBossHealth/2) / startPosOfBossHealth));
-	
-	CCLOG("percent damage:\t%f\npercent moved:\t%f", percentDamageToBoss , percentageMoved);
+	float percentageMoved = 100 - (100 * ((getChildByTag(BOSSHEALTH)->getPositionX() + startPosOfBossHealth / 2) / startPosOfBossHealth));
+
+	CCLOG("percent damage:\t%f\npercent moved:\t%f", percentDamageToBoss, percentageMoved);
 
 	if (percentDamageToBoss > percentageMoved)
 	{
@@ -480,7 +476,7 @@ void Game::update(float delta)
 	}
 }
 
-void Game::damageBoss(int damage)
+void NewGame::damageBoss(int damage)
 {
 	gm->levels.at(level)->health -= damage;
 	percentDamageToBoss += 100 * damage / gm->levels.at(level)->totalHealth;
@@ -491,13 +487,12 @@ void Game::damageBoss(int damage)
 		if (level == 0)
 		{
 			transform = true;
-			level++;
-			
+
+			auto StoryScene = WinGameDialogueScene::createScene();
+			cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 		}
 		else if (level == 1)
 		{
-			auto StoryScene = MidGameDialogueScene::createScene();
-			cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
 		}
 	}
 	else
@@ -507,20 +502,20 @@ void Game::damageBoss(int damage)
 	}
 }
 
-int Game::calculateDamage(int attack)
+int NewGame::calculateDamage(int attack)
 {
 	Boss* b = gm->levels.at(level);
 	Car* c = gm->car;
 	int damage = 0;
 	if (attack == 1)
 	{
-		damage = 300 - (5*b->defence) + c->currentAttack;
-		changeTimer(10 - c->currentSpeed/10);
+		damage = 300 - (5 * b->defence) + c->currentAttack;
+		changeTimer(10 - c->currentSpeed / 10);
 	}
 	else if (attack == 2)
 	{
-		damage = (500 + c->currentAttack) - (3*b->defence);
-		changeTimer(20 - 2*(c->currentSpeed/10));
+		damage = (500 + c->currentAttack) - (3 * b->defence);
+		changeTimer(20 - 2 * (c->currentSpeed / 10));
 	}
 	else if (attack == 3)
 	{
@@ -530,12 +525,12 @@ int Game::calculateDamage(int attack)
 	else if (attack == 4)
 	{
 		damage = 300 - (5 * b->defence) + c->currentAttack;
-		changeTimer(10 - (7 - c->currentSpeed/10));
+		changeTimer(10 - (7 - c->currentSpeed / 10));
 	}
 	else if (attack == 6)
 	{
-		damage = (300 + c->currentAttack) - (3*b->defence);
-		
+		damage = (300 + c->currentAttack) - (3 * b->defence);
+
 		c->currentAttack += 10;
 		if (c->currentSpeed < 100)
 		{
@@ -550,7 +545,7 @@ int Game::calculateDamage(int attack)
 	return damage;
 }
 
-int Game::bossAI()
+int NewGame::bossAI()
 {
 	Boss* b = gm->levels.at(level);
 	Car* c = gm->car;
@@ -558,14 +553,14 @@ int Game::bossAI()
 	int returnDamage;
 	int randomNoise;
 	int random = rand() % 100;
-	if ( 1 - (b->health / b->totalHealth) > .3)
+	if (1 - (b->health / b->totalHealth) > .3)
 	{
 		randomNoise = 10 - rand() % 70;
-		
+
 		if (random > 95)
 		{
 			//special attack
-			returnDamage = (b->attack * 4) - c->currentDefence/2;
+			returnDamage = (b->attack * 4) - c->currentDefence / 2;
 		}
 		else if (random > 70)
 		{
@@ -648,7 +643,7 @@ int Game::bossAI()
 	return returnDamage;
 }
 
-void Game::calculateScore()
+void NewGame::calculateScore()
 {
 	if (time <= 0)
 	{

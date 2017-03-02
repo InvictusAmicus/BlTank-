@@ -1,10 +1,10 @@
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef _NEW_GAME_H_
+#define _NEW_GAME_H_
 
 #include "cocos2d.h"
 #include "GameManager.h"
 
-class Game :public cocos2d::Layer
+class NewGame :public cocos2d::Layer
 {
 private:
 	int time;
@@ -30,15 +30,13 @@ public:
 
 	virtual bool init();
 
-	CREATE_FUNC(Game);
+	CREATE_FUNC(NewGame);
 	void update(float delta) override;
 
 	void changeTimer(int d);
 	void changeHealth(int d);
 	int bossAI();
 	void calculateScore();
-
-
 };
 
-#endif
+#endif // !_NEW_GAME_H_

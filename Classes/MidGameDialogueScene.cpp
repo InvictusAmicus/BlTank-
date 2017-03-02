@@ -1,8 +1,8 @@
-#include "WinGameDialogueScene.h"
-#include "ScoreScene.h"
+#include "MidGameDialogueScene.h"
+#include "NewGame.h"
 
 
-cocos2d::Scene* WinGameDialogueScene::createScene()
+cocos2d::Scene* MidGameDialogueScene::createScene()
 {
 	/*
 	*	Create a scene from the cocos2d library that will hold the
@@ -11,13 +11,13 @@ cocos2d::Scene* WinGameDialogueScene::createScene()
 	*	the title screen
 	*/
 	auto scene = cocos2d::Scene::create();
-	auto layer = WinGameDialogueScene::create();
+	auto layer = MidGameDialogueScene::create();
 	scene->addChild(layer);
 
 	return scene;
 }
 
-bool WinGameDialogueScene::init()
+bool MidGameDialogueScene::init()
 {
 	if (!Layer::init())
 	{
@@ -38,7 +38,7 @@ bool WinGameDialogueScene::init()
 	GameManager* gm = GameManager::getInstance();
 
 
-	auto sprite = cocos2d::Sprite::create("WinGameImage.png");
+	auto sprite = cocos2d::Sprite::create("MidGameImage1.png");
 	sprite->setScale(gm->scaler);
 	sprite->setPosition
 	(
@@ -71,7 +71,7 @@ bool WinGameDialogueScene::init()
 			x++;
 			if (x == 1)
 			{
-				target->setTexture(gm->car->endStoryScene);
+				target->setTexture(gm->car->midStoryScene);
 			}
 			else
 			{
@@ -89,8 +89,9 @@ bool WinGameDialogueScene::init()
 }
 
 
-void WinGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
+void MidGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
 {
-	auto scene = ScoreScene::createScene();
+
+	auto scene = NewGame::createScene();
 	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionCrossFade::create(2, scene));
 }

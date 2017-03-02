@@ -16,4 +16,4 @@ class LoseGameDialogueScene : public cocos2d::Layer
 		CREATE_FUNC(LoseGameDialogueScene);
 	};
 
-#endif // !_ENDINGDIALOGUE_SCENE_
+#endif // !_ENDING_DIALOGUE_H_
