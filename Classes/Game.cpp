@@ -10,6 +10,7 @@
 #define specialButtonTag 1012
 
 #define BOSSHEALTH 11111
+#define PLAYERTAG 22222
 
 
 
@@ -107,7 +108,7 @@ bool Game::init()
 			origin.y + (3 * visibleSize.height / 8)
 		)
 	);
-	this->addChild(player, 1);
+	this->addChild(player, 1, PLAYERTAG);
 
 	std::string gh;
 
@@ -377,15 +378,23 @@ void Game::update(float delta)
 						special->setTexture("Special.png");
 						if (attMagSpe == 0) // first attack
 						{
-
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->physicalAnim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(1));
 						}
 						else if (attMagSpe == 1)//elemental attack
 						{
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->magicAnim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(2));
 						}
 						else // special 1
 						{
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special1Anim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(3));
 						}
 						buttonLayer--;
@@ -397,14 +406,23 @@ void Game::update(float delta)
 						special->setTexture("Special.png");
 						if (attMagSpe == 0) // second attack
 						{
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->physicalAnim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(4));
 						}
 						else if (attMagSpe == 1)//heal
 						{
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->healingAnim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							changeHealth(-gm->car->gameHealth);
 						}
 						else // special 2
 						{
+							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special2Anim, 0.2f, 1);
+							cocos2d::Animate* an = cocos2d::Animate::create(a);
+							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(6));
 						}
 						buttonLayer--;

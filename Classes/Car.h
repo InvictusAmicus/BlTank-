@@ -27,6 +27,14 @@ public:
 	std::string midStoryScene;
 	std::string endStoryScene;
 
+	
+	cocos2d::Vector<cocos2d::SpriteFrame*> idleAnim;
+	cocos2d::Vector<cocos2d::SpriteFrame*> magicAnim;
+	cocos2d::Vector<cocos2d::SpriteFrame*> physicalAnim;
+	cocos2d::Vector<cocos2d::SpriteFrame*> special1Anim;
+	cocos2d::Vector<cocos2d::SpriteFrame*> special2Anim;
+	cocos2d::Vector<cocos2d::SpriteFrame*> healingAnim;
+	
 	Car(std::string n);
 	~Car();
 

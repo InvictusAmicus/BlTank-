@@ -61,9 +61,9 @@ bool CustomizeCarScene::init()
 	current = 0;
 
 	
-	cars.push_back(new Car("Finished_Images/Player_1_120x80.png"));
-	cars.push_back(new Car("Finished_Images/Player_2_120x80.png"));
-	cars.push_back(new Car("Finished_Images/Player_3_120x80.png"));
+	cars.push_back(new Car("P1Idle.png"));
+	cars.push_back(new Car("P2Idle.png"));
+	cars.push_back(new Car("P3Idle.png"));
 
 
 	statline[0] = cars.at(current)->health;
@@ -153,7 +153,7 @@ bool CustomizeCarScene::init()
 	);
 	this->addChild(forwardArrow3, 1);
 	*/
-	auto carSprite = cocos2d::Sprite::create("Finished_Images/Player_1_120x80.png");
+	auto carSprite = cocos2d::Sprite::create("P1Idle.png");
 	carSprite->setScale(gm->scaler);
 	
 	carSprite->setPosition
