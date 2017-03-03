@@ -1,5 +1,6 @@
 #include "LoseGameDialogueScene.h"
 #include "MainMenuScene.h"
+#include "SimpleAudioEngine.h"
 
 
 cocos2d::Scene* LoseGameDialogueScene::createScene()
@@ -36,6 +37,11 @@ bool LoseGameDialogueScene::init()
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
 
 	GameManager* gm = GameManager::getInstance();
+
+
+	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->stopBackgroundMusic(true);
+	audio->playBackgroundMusic("Audio/Finished_Sounds/Tracks/Game_Over.mp3", true);
 
 
 	auto sprite = cocos2d::Sprite::create("LoseGameImage.png");

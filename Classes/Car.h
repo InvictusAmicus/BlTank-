@@ -34,6 +34,10 @@ public:
 	cocos2d::Vector<cocos2d::SpriteFrame*> special1Anim;
 	cocos2d::Vector<cocos2d::SpriteFrame*> special2Anim;
 	cocos2d::Vector<cocos2d::SpriteFrame*> healingAnim;
+
+	char* magicSound;
+	char* specialSound1;
+	char* specialSound2;
 	
 	Car(std::string n);
 	~Car();

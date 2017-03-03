@@ -11,7 +11,9 @@
 
 #define BOSSHEALTH 11111
 #define PLAYERTAG 22222
+#define BOSSTAG 33333
 
+#define SPECIAL 44444
 
 
 cocos2d::Scene* Game::createScene()
@@ -39,7 +41,7 @@ bool Game::init()
 
 	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->stopBackgroundMusic(true);
-	audio->playBackgroundMusic("Audio/Mabye-Boss-Battle.mp3", true);
+	audio->playBackgroundMusic("Audio/Finished_Sounds/Tracks/Boss.mp3", true);
 
 	time = 150;
 	level = 0;
@@ -49,7 +51,7 @@ bool Game::init()
 	Car* car = gm->car;
 //	Boss* boy = gm->levels.at(0);
 
-	auto background = cocos2d::Sprite::create("Finished_Images/BattleBackground.png");
+	auto background = cocos2d::Sprite::create("BattleBackground.png");
 	background->setScale(gm->scaler);
 	background->setPosition
 	(
@@ -143,7 +145,7 @@ bool Game::init()
 			origin.y + (4.5 * visibleSize.height / 8) - bossSprite->getContentSize().height / 2
 		)
 	);
-	this->addChild(bossSprite, 1);
+	this->addChild(bossSprite, 1, BOSSTAG);
 
 	auto bossLabel = cocos2d::Label::createWithTTF("Boss Health: " ,"fonts/arial.ttf", 12);
 	bossLabel->setScale(gm->scaler);
@@ -297,14 +299,27 @@ void Game::changeHealth(int d)
 	if (gm->car->currentHealth <= 0)
 	{
 		//fade out to bad end // lost all health
-		auto StoryScene = LoseGameDialogueScene::createScene();
-		cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+		auto action = cocos2d::Sequence::create
+		(
+			cocos2d::DelayTime::create(2),
+			cocos2d::CallFunc::create
+			(
+				[&]()
+				{
+					// here is the lambda function that does whatever you want after 2 seconds
+					auto StoryScene = LoseGameDialogueScene::createScene();
+					cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+				}
+			),
+			NULL
+		);
+
+		this->runAction(action);
 	}
 }
 
 void Game::changeTimer(int d)
 {
-
 	time -= d;
 	std::string timeLeft;
 
@@ -321,8 +336,21 @@ void Game::changeTimer(int d)
 
 	if (time <= 0)
 	{
-		auto StoryScene = LoseGameDialogueScene::createScene();
-		cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+		auto action = cocos2d::Sequence::create
+		(
+			cocos2d::DelayTime::create(2),
+			cocos2d::CallFunc::create
+			(
+				[&]()
+				{
+					// here is the lambda function that does whatever you want after 2 seconds
+					auto StoryScene = LoseGameDialogueScene::createScene();
+					cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+				}
+			),
+			NULL
+		);
+		runAction(action);
 	}
 }
 
@@ -378,24 +406,31 @@ void Game::update(float delta)
 						special->setTexture("Special.png");
 						if (attMagSpe == 0) // first attack
 						{
+							//slash
 							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->physicalAnim, 0.2f, 1);
 							cocos2d::Animate* an = cocos2d::Animate::create(a);
 							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(1));
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect("Audio/Finished_Sounds/Attacks/Sword.mp3");
 						}
 						else if (attMagSpe == 1)//elemental attack
 						{
+							//ice
 							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->magicAnim, 0.2f, 1);
 							cocos2d::Animate* an = cocos2d::Animate::create(a);
 							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(2));
+
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect(gm->car->magicSound);
 						}
 						else // special 1
 						{
-							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special1Anim, 0.2f, 1);
-							cocos2d::Animate* an = cocos2d::Animate::create(a);
-							getChildByTag(PLAYERTAG)->runAction(an);
-							damageBoss(calculateDamage(3));
+							calculateDamage(3);
+
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect(gm->car->specialSound1);
 						}
 						buttonLayer--;
 					}
@@ -406,10 +441,14 @@ void Game::update(float delta)
 						special->setTexture("Special.png");
 						if (attMagSpe == 0) // second attack
 						{
+							//strike
 							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->physicalAnim, 0.2f, 1);
 							cocos2d::Animate* an = cocos2d::Animate::create(a);
 							getChildByTag(PLAYERTAG)->runAction(an);
 							damageBoss(calculateDamage(4));
+
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect("Audio/Finished_Sounds/Attacks/Strike.mp3");
 						}
 						else if (attMagSpe == 1)//heal
 						{
@@ -417,13 +456,16 @@ void Game::update(float delta)
 							cocos2d::Animate* an = cocos2d::Animate::create(a);
 							getChildByTag(PLAYERTAG)->runAction(an);
 							changeHealth(-gm->car->gameHealth);
+
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect("Audio/Finished_Sounds/Magic/Cure.mp3");
 						}
 						else // special 2
 						{
-							cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special2Anim, 0.2f, 1);
-							cocos2d::Animate* an = cocos2d::Animate::create(a);
-							getChildByTag(PLAYERTAG)->runAction(an);
-							damageBoss(calculateDamage(6));
+							calculateDamage(6);
+
+							CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
+							audio->playEffect(gm->car->specialSound1);
 						}
 						buttonLayer--;
 					}
@@ -514,8 +556,22 @@ void Game::damageBoss(int damage)
 		}
 		else if (level == 1)
 		{
-			auto StoryScene = MidGameDialogueScene::createScene();
-			cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+			auto action = cocos2d::Sequence::create
+			(
+				cocos2d::DelayTime::create(2),
+				cocos2d::CallFunc::create
+				(
+					[&]()
+					{
+						// here is the lambda function that does whatever you want after 2 seconds
+						auto StoryScene = MidGameDialogueScene::createScene();
+						cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionRotoZoom::create(2, StoryScene));
+					}
+				),
+			NULL
+		);
+
+			this->runAction(action);
 		}
 	}
 	else
@@ -529,6 +585,8 @@ int Game::calculateDamage(int attack)
 {
 	Boss* b = gm->levels.at(level);
 	Car* c = gm->car;
+	cocos2d::Sprite* boss = (cocos2d::Sprite*)getChildByTag(BOSSTAG);
+	boss->setTexture(b->hurtFilename);
 	int damage = 0;
 	if (attack == 1)
 	{
@@ -542,8 +600,47 @@ int Game::calculateDamage(int attack)
 	}
 	else if (attack == 3)
 	{
-		damage = (1000 + c->currentAttack * 3) - (b->defence * 10);
-		changeTimer(250 / c->currentSpeed);
+		int damage1 = 0;
+		cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special1Anim, 0.3f, 1);
+		cocos2d::Animate* an = cocos2d::Animate::create(a);
+
+		auto specialSprite = cocos2d::Sprite::createWithSpriteFrame(a->getFrames().at(0)->getSpriteFrame());
+		specialSprite->setScale(gm->scaler/2);
+		specialSprite->setPosition
+		(
+			cocos2d::Vec2
+			(
+				getChildByTag(PLAYERTAG)->getPositionX() - gm->scaler * getChildByTag(PLAYERTAG)->getContentSize().width,
+				getChildByTag(PLAYERTAG)->getPositionY()// - gm->scaler * getChildByTag(PLAYERTAG)->getContentSize().height
+			)
+		);
+		this->addChild(specialSprite, 1, SPECIAL);
+		specialSprite->runAction(an);
+		auto action = cocos2d::Sequence::create
+		(
+			cocos2d::DelayTime::create(0.9f),
+			cocos2d::CallFunc::create
+			(
+				[&]()
+				{
+
+					int damage1 = 0; 
+					damage1 = (800 + gm->car->currentAttack * 3) - (gm->levels.at(level)->defence * 10);
+					changeTimer(250 / gm->car->currentSpeed);
+					removeChild(getChildByTag(SPECIAL));
+					cocos2d::Sprite* boss1 = (cocos2d::Sprite*)getChildByTag(BOSSTAG);
+					boss1->setTexture(gm->levels.at(level)->filename);
+					if (damage1 < 0)
+					{
+						damage1 *= -1;
+					}
+					Game::damageBoss(damage1);
+					return 0;
+				}
+			),
+			NULL
+		);
+		runAction(action);
 	}
 	else if (attack == 4)
 	{
@@ -552,19 +649,74 @@ int Game::calculateDamage(int attack)
 	}
 	else if (attack == 6)
 	{
-		damage = (300 + c->currentAttack) - (3*b->defence);
-		
-		c->currentAttack += 10;
-		if (c->currentSpeed < 100)
-		{
-			c->currentSpeed += 10;
-		}
-		changeTimer(35 - 3 * (c->currentSpeed / 10));
+		cocos2d::Animation* a = cocos2d::Animation::createWithSpriteFrames(gm->car->special2Anim, 0.3f, 1);
+		cocos2d::Animate* an = cocos2d::Animate::create(a);
+		auto specialSprite = cocos2d::Sprite::createWithSpriteFrame(a->getFrames().at(0)->getSpriteFrame());
+		specialSprite->setScale(gm->scaler/2);
+		specialSprite->setPosition
+		(
+			cocos2d::Vec2
+			(
+				getChildByTag(PLAYERTAG)->getPositionX() - gm->scaler * getChildByTag(PLAYERTAG)->getContentSize().width,
+				getChildByTag(PLAYERTAG)->getPositionY()// - gm->scaler * getChildByTag(PLAYERTAG)->getContentSize().height
+			)
+		);
+		this->addChild(specialSprite, 1, SPECIAL);
+		specialSprite->runAction(an);
+		auto action = cocos2d::Sequence::create
+		(
+
+			cocos2d::DelayTime::create(0.9f),
+			cocos2d::CallFunc::create
+			(
+				[&]()
+				{
+
+					int damage1 = 0;
+					damage1 = (300 + gm->car->currentAttack) - (3 * gm->levels.at(level)->defence);
+
+					gm->car->currentAttack += 10;
+					if (gm->car->currentSpeed < 100)
+					{
+						gm->car->currentSpeed += 10;
+					}
+					changeTimer(35 - 3 * (gm->car->currentSpeed / 10));
+
+					removeChild(getChildByTag(SPECIAL));
+					cocos2d::Sprite* boss1 = (cocos2d::Sprite*)getChildByTag(BOSSTAG);
+					boss1->setTexture(gm->levels.at(level)->filename);
+					if (damage1 < 0)
+					{
+						damage1 *= -1;
+					}
+					Game::damageBoss(damage1);
+					return 0;
+				}
+			),
+			NULL
+		);
+		runAction(action);		
 	}
 	if (damage < 0)
 	{
 		damage *= -1;
 	}
+	auto action = cocos2d::Sequence::create
+	(
+		cocos2d::DelayTime::create(0.5f),
+		cocos2d::CallFunc::create
+		(
+			[&]()
+			{
+				// here is the lambda function that does whatever you want after 2 seconds
+				cocos2d::Sprite* boss = (cocos2d::Sprite*)getChildByTag(BOSSTAG);
+				boss->setTexture(gm->levels.at(level)->filename);
+			}
+		),
+		NULL
+	);
+	runAction(action);
+	
 	return damage;
 }
 

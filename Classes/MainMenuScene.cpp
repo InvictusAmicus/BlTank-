@@ -1,5 +1,6 @@
 #include "MainMenuScene.h"
 #include "BeginningDialogueScene.h"
+#include "HowtoPlay.h"
 #include "SimpleAudioEngine.h"
 
 cocos2d::Scene* MainMenuScene::createScene()
@@ -70,7 +71,7 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (2.5 * visibleSize.width / 12),
+			origin.x + (3 * visibleSize.width / 12),
 			origin.y + (2 * visibleSize.height / 8)
 		)
 	);
@@ -78,6 +79,30 @@ bool MainMenuScene::init()
 	auto menu = cocos2d::Menu::create(playGameButton, NULL);
 	menu->setPosition(cocos2d::Vec2::ZERO);
 	this->addChild(menu, 1);
+
+	auto HowtoPlay = cocos2d::MenuItemImage::create
+	(
+		"HowToPlayButton.png",
+		"HowToPlayButton.png",
+		CC_CALLBACK_1(MainMenuScene::goToControls, this)
+	);
+
+	/*
+	Set the position of the button using a 2d Vector variable
+	*/
+	HowtoPlay->setScale(gm->scaler);
+	HowtoPlay->setPosition
+	(
+		cocos2d::Vec2
+		(
+			origin.x + (6 * visibleSize.width / 12),
+			origin.y + (2 * visibleSize.height / 8)
+		)
+	);
+
+	auto howtomenu = cocos2d::Menu::create(HowtoPlay, NULL);
+	howtomenu->setPosition(cocos2d::Vec2::ZERO);
+	this->addChild(howtomenu, 1);
 /*
 	auto optionsButton = cocos2d::MenuItemImage::create
 	(
@@ -125,7 +150,7 @@ bool MainMenuScene::init()
 	(
 		cocos2d::Vec2
 		(
-			origin.x + (5.5 * visibleSize.width / 12),
+			origin.x + (9 * visibleSize.width / 12),
 			origin.y + (2 * visibleSize.height / 8)
 		)
 	);
@@ -143,9 +168,10 @@ void MainMenuScene::goToStory(cocos2d::Ref* pSender)
 	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionFlipX::create(2, StoryScene));
 }
 
-void MainMenuScene::goToOptions(cocos2d::Ref* pSender)
+void MainMenuScene::goToControls(cocos2d::Ref* pSender)
 {
-	CCLOG("Op Op Op");
+	auto StoryScene = HowToPlay::createScene();
+	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionFlipX::create(2, StoryScene));
 }
 
 void MainMenuScene::goToExit(cocos2d::Ref* pSender)

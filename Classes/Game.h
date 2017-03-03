@@ -36,6 +36,7 @@ public:
 	void changeTimer(int d);
 	void changeHealth(int d);
 	int bossAI();
+	void goToNext(cocos2d::Ref*);
 	void calculateScore();
 
 

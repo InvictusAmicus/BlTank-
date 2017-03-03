@@ -90,7 +90,7 @@ bool ScoreScene::init()
 
 	char s[20];
 
-	sprintf(s, "Your score:\t%d", gm->score);
+	sprintf(s, "Your score:  %d", gm->score);
 
 	auto yourScore = cocos2d::Label::createWithTTF(s, "fonts/arial.ttf", 20);
 	yourScore->setScale(gm->scaler);
@@ -105,7 +105,7 @@ bool ScoreScene::init()
 	);
 	this->addChild(yourScore, 1);
 
-	sprintf(s, "1st:\t%d", high_score1);
+	sprintf(s, "1st:    %d", high_score1);
 	auto label1 = cocos2d::Label::createWithTTF(s, "fonts/arial.ttf", 20);
 	label1->setScale(gm->scaler);
 	label1->setPosition
@@ -120,7 +120,7 @@ bool ScoreScene::init()
 	);
 	this->addChild(label1, 1);
 
-	sprintf(s, "2nd:\t%d", high_score2);
+	sprintf(s, "2nd:   %d", high_score2);
 	auto label2 = cocos2d::Label::createWithTTF(s, "fonts/arial.ttf", 20);
 	label2->setScale(gm->scaler);
 	label2->setPosition

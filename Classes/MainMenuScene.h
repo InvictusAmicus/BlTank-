@@ -21,7 +21,7 @@ public:
 	virtual bool init();
 
 	void goToStory(cocos2d::Ref* pSender);
-	void goToOptions(cocos2d::Ref* pSender);
+	void goToControls(cocos2d::Ref* pSender);
 	void goToExit(cocos2d::Ref* pSender);
 
 	CREATE_FUNC(MainMenuScene);

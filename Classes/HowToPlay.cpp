@@ -1,9 +1,9 @@
-#include "WinGameDialogueScene.h"
+#include "HowToPlay.h"
+
 #include "ScoreScene.h"
-#include "SimpleAudioEngine.h"
 
 
-cocos2d::Scene* WinGameDialogueScene::createScene()
+cocos2d::Scene* HowToPlay::createScene()
 {
 	/*
 	*	Create a scene from the cocos2d library that will hold the
@@ -12,13 +12,13 @@ cocos2d::Scene* WinGameDialogueScene::createScene()
 	*	the title screen
 	*/
 	auto scene = cocos2d::Scene::create();
-	auto layer = WinGameDialogueScene::create();
+	auto layer = HowToPlay::create();
 	scene->addChild(layer);
 
 	return scene;
 }
 
-bool WinGameDialogueScene::init()
+bool HowToPlay::init()
 {
 	if (!Layer::init())
 	{
@@ -36,14 +36,10 @@ bool WinGameDialogueScene::init()
 	auto visibleSize = director->getVisibleSize();
 	cocos2d::Vec2 origin = director->getVisibleOrigin();
 
-	CocosDenshion::SimpleAudioEngine* audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->stopBackgroundMusic(true);
-	audio->playBackgroundMusic("Audio/Finished_Sounds/Tracks/Victory_FanFare.mp3", true);
-
 	GameManager* gm = GameManager::getInstance();
 
 
-	auto sprite = cocos2d::Sprite::create(gm->car->endStoryScene);
+	auto sprite = cocos2d::Sprite::create("HowToPlay.png");
 	sprite->setScale(gm->scaler);
 	sprite->setPosition
 	(
@@ -83,8 +79,8 @@ bool WinGameDialogueScene::init()
 }
 
 
-void WinGameDialogueScene::goToCustomize(cocos2d::Ref* pSender)
+void HowToPlay::goToCustomize(cocos2d::Ref* pSender)
 {
-	auto scene = ScoreScene::createScene();
+	auto scene = MainMenuScene::createScene();
 	cocos2d::Director::getInstance()->replaceScene(cocos2d::TransitionCrossFade::create(2, scene));
 }
